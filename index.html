@@ -366,7 +366,7 @@
             
             let deviceType = 'Computer';
             
-            if (/mobile|android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent)) {
+            if (/mobile|android|iphone|ipad|ipod|blackberry|iemobile|opera mini|webos|windows phone|kindle/i.test(userAgent)) {
                 deviceType = 'Phone';
             } else if (width <= 768) {
                 deviceType = 'Tablet/Phone';
@@ -438,7 +438,7 @@
                 device: deviceInfo
             };
             
-            console.log('Configuration saved:', formData);
+            // Configuration saved successfully
             alert('Configuration saved successfully!\n\nUsername: ' + formData.username + '\nSystem: ' + formData.systemName);
         });
 
