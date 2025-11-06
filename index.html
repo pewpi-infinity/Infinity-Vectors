@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Infinity Login · AI Hatch</title>
+  <title>INFINITY · Vectors</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
@@ -44,7 +44,7 @@
     main {
       flex: 1;
       display: grid;
-      grid-template-columns: minmax(260px, 380px) minmax(240px, 1fr);
+      grid-template-columns: minmax(260px, 360px) minmax(260px, 1fr);
       gap: 1rem;
       padding: 1rem;
     }
@@ -93,17 +93,30 @@
       background: rgba(15,23,42,.15);
       border: 1px solid rgba(148,163,184,.15);
       color: #fff;
-      margin-left: .4rem;
     }
     .ai-card {
       padding: .6rem;
       display: flex;
       flex-direction: column;
-      gap: .6rem;
+      gap: .45rem;
+      min-height: 0;
     }
-    .ai-card h2 {
-      font-size: .7rem;
-      margin-top: 0;
+    .ai-card h2 { font-size: .7rem; margin: 0; }
+    .ai-log {
+      background: rgba(2,6,23,.25);
+      border: 1px solid rgba(148,163,184,.05);
+      border-radius: .5rem;
+      padding: .4rem;
+      font-size: .58rem;
+      overflow-y: auto;
+      max-height: 120px;
+    }
+    .ai-input-wrap {
+      display: flex;
+      gap: .35rem;
+    }
+    .ai-input-wrap input {
+      margin-bottom: 0;
     }
     .history {
       background: rgba(2,6,23,.25);
@@ -111,236 +124,59 @@
       border-radius: .5rem;
       padding: .35rem;
       font-size: .55rem;
-      max-height: 180px;
+      max-height: 120px;
       overflow: auto;
     }
-    /* 3D cube */
-    .cube-shell {
-      width: 120px;
-      height: 120px;
-      margin-bottom: .25rem;
-      perspective: 600px;
-      align-self: flex-start;
-    }
-    .cube {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      transform-style: preserve-3d;
-      animation: spin 8s linear infinite;
-    }
-    .cube-face {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(160deg, rgba(56,189,248,.7), rgba(3,7,18,0));
-      border: 1px solid rgba(148,163,184,.2);
+    .receipts {
+      background: rgba(2,6,23,.15);
+      border: 1px solid rgba(148,163,184,.03);
       border-radius: .5rem;
+      padding: .35rem;
+      font-size: .54rem;
+      max-height: 110px;
+      overflow: auto;
+    }
+    .quick-links {
+      margin-top: .5rem;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: .6rem;
-      color: #e2e8f0;
-      backdrop-filter: blur(2px);
-      text-transform: uppercase;
-      letter-spacing: .05em;
+      gap:.35rem;
+      flex-wrap: wrap;
     }
-    .cube-face:nth-child(1) { transform: rotateY(0deg) translateZ(60px); }
-    .cube-face:nth-child(2) { transform: rotateY(90deg) translateZ(60px); }
-    .cube-face:nth-child(3) { transform: rotateY(180deg) translateZ(60px); }
-    .cube-face:nth-child(4) { transform: rotateY(-90deg) translateZ(60px); }
-    .cube-face:nth-child(5) { transform: rotateX(90deg) translateZ(60px); }
-    .cube-face:nth-child(6) { transform: rotateX(-90deg) translateZ(60px); }
-    @keyframes spin {
-      0% { transform: rotateX(-20deg) rotateY(0deg); }
-      100% { transform: rotateX(-20deg) rotateY(360deg); }
+    .quick-links button {
+      background: rgba(15,23,42,.15);
+      border: 1px solid rgba(148,163,184,.12);
+      color: #fff;
+      font-size: .55rem;
+      padding: .25rem .5rem;
+      border-radius: .35rem;
     }
-
-    @media (max-width: 740px) {
-      main {
-        grid-template-columns: 1fr;
-      }
+    /* PORTAL PANEL (hidden until click) */
+    .portal-shell {
+      background: rgba(3,7,18,.3);
+      border: 1px solid rgba(148,163,184,.08);
+      border-radius: .6rem;
+      padding: .4rem;
+      display: none;
+      gap: .3rem;
+      flex-wrap: wrap;
     }
-  </style>
-</head>
-<body>
-  <header>
-    <div>
-      <h1>Infinity Portal</h1>
-      <small>PewPi AI-to-AI local login</small>
-    </div>
-    <div id="userDisplay" style="font-size:.6rem; opacity:.8;">Guest (not signed in)</div>
-  </header>
-
-  <main>
-    <!-- LEFT: LOGIN -->
-    <section class="card login-card">
-      <h2>Sign in to Infinity</h2>
-      <p style="font-size:.55rem; color:var(--muted); margin-top:-.1rem;">Stored in browser as <code>infinityUser</code>.</p>
-      <label for="name">Name</label>
-      <input id="name" placeholder="Kris" />
-      <label for="email">Email (optional)</label>
-      <input id="email" type="email" placeholder="you@example.com" />
-      <div>
-        <button onclick="doInfinityLogin()">Sign in</button>
-        <button class="muted-link" onclick="doBypass()">Bypass</button>
-      </div>
-      <p id="loginStatus" style="font-size:.55rem; color:var(--muted); margin-top:.4rem;"></p>
-    </section>
-
-    <!-- RIGHT: AFTER LOGIN -->
-    <section class="card ai-card" id="portalPanel" style="display:none;">
-      <!-- 3D BOX / VECTORS FEEL -->
-      <div class="cube-shell" title="Infinity Vector Core">
-        <div class="cube">
-          <div class="cube-face">∞</div>
-          <div class="cube-face">Vectors</div>
-          <div class="cube-face">PewPi</div>
-          <div class="cube-face">Rogers</div>
-          <div class="cube-face">Core</div>
-          <div class="cube-face">501</div>
-        </div>
-      </div>
-
-      <h2>Infinity Apps</h2>
-      <p style="font-size:.55rem; color:var(--muted); margin-top:-.3rem;">
-        Portal, marketplace, radio, vectors — all hang off your login.
-      </p>
-      <div style="display:flex; gap:.4rem; flex-wrap:wrap; margin-bottom:.5rem;">
-        <button class="muted-link" onclick="logQuick('open-portal')">Portal</button>
-        <button class="muted-link" onclick="logQuick('open-marketplace')">Marketplace</button>
-        <button class="muted-link" onclick="logQuick('open-radio')">Radio</button>
-        <button class="muted-link" onclick="logQuick('open-vectors')">Vectors</button>
-      </div>
-
-      <h3 style="font-size:.62rem; margin-bottom:.3rem;">PewPi Activity</h3>
-      <div id="activityBox" class="history">No activity yet.</div>
-    </section>
-  </main>
-
-  <script>
-    // ===== infinity-auth.js =====
-    (function () {
-      const STORAGE_KEY = "infinityUser";
-      const api = {
-        getUser() {
-          try {
-            const raw = localStorage.getItem(STORAGE_KEY);
-            return raw ? JSON.parse(raw) : null;
-          } catch (e) { return null; }
-        },
-        setUser(userObj) {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(userObj));
-        },
-        require(targetEl) {
-          const user = this.getUser();
-          if (!user) {
-            if (targetEl) targetEl.textContent = "Guest (not signed in)";
-            return null;
-          }
-          if (targetEl) targetEl.textContent = user.name || user.email || "Infinity user";
-          return user;
-        }
-      };
-      window.infinityAuth = api;
-    })();
-
-    // ===== infinity-logger.js =====
-    (function () {
-      const STORAGE_KEY = "infinityActivity";
-      const MAX_ENTRIES = 200;
-      const api = {
-        log(action, extra) {
-          const user = window.infinityAuth ? window.infinityAuth.getUser() : null;
-          const raw = localStorage.getItem(STORAGE_KEY);
-          const list = raw ? JSON.parse(raw) : [];
-          list.unshift({
-            ts: new Date().toISOString(),
-            user: user ? (user.name || user.email || "Infinity user") : "Guest",
-            path: location.pathname + location.hash,
-            action,
-            extra: extra || null
-          });
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(list.slice(0, MAX_ENTRIES)));
-          // optional: sync to central hub
-          // syncActivityToHub(list[0]);
-        },
-        getAll() {
-          const raw = localStorage.getItem(STORAGE_KEY);
-          return raw ? JSON.parse(raw) : [];
-        }
-      };
-      window.infinityLogger = api;
-    })();
-
-    // ===== optional remote sync (stub) =====
-    function syncActivityToHub(entry) {
-      // put your static endpoint / worker URL here
-      // fetch("https://your-hub.example.com/infinity-log", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(entry)
-      // });
+    .portal-shell.active {
+      display: flex;
     }
-
-    // ===== page wiring =====
-    function renderActivity() {
-      const box = document.getElementById("activityBox");
-      const list = window.infinityLogger.getAll();
-      box.innerHTML = "";
-      if (!list.length) {
-        box.textContent = "No activity yet.";
-        return;
-      }
-      list.slice(0, 40).forEach(item => {
-        const p = document.createElement("p");
-        p.textContent = `${item.ts} — ${item.user}: ${item.action}`;
-        box.appendChild(p);
-      });
+    .portal-app {
+      background: rgba(15,23,42,.5);
+      border: 1px solid rgba(148,163,184,.12);
+      border-radius: .5rem;
+      padding: .35rem .5rem;
+      font-size: .55rem;
+      min-width: 140px;
     }
-
-    function doInfinityLogin() {
-      const name = document.getElementById("name").value.trim();
-      const email = document.getElementById("email").value.trim();
-      if (!name && !email) {
-        document.getElementById("loginStatus").textContent = "Enter a name or email.";
-        return;
-      }
-      const userObj = { name, email, ts: Date.now(), source: "manual-login" };
-      window.infinityAuth.setUser(userObj);
-      document.getElementById("loginStatus").textContent = "Login saved locally.";
-      window.infinityLogger.log("login");
-      revealPortal();
+    footer {
+      text-align: center;
+      font-size: .55rem;
+      padding: .35rem;
+      color: rgba(255,255,255,.35);
     }
-
-    function doBypass() {
-      const userObj = { name: "Infinity Admin", email: "", ts: Date.now(), source: "bypass" };
-      window.infinityAuth.setUser(userObj);
-      window.infinityLogger.log("bypass-login");
-      revealPortal();
+    @media (max-width: 880px) {
+      main { grid-template-columns: 1fr; }
     }
-
-    function revealPortal() {
-      window.infinityAuth.require(document.getElementById("userDisplay"));
-      document.getElementById("portalPanel").style.display = "flex";
-      renderActivity();
-    }
-
-    function logQuick(action) {
-      window.infinityLogger.log(action);
-      renderActivity();
-    }
-
-    // restore session on load
-    document.addEventListener("DOMContentLoaded", () => {
-      const user = window.infinityAuth.getUser();
-      if (user) {
-        // put saved user back into inputs so you can see it's remembered
-        if (user.name) document.getElementById("name").value = user.name;
-        if (user.email) document.getElementById("email").value = user.email;
-        revealPortal();
-      }
-    });
-  </script>
-</body>
-</html>
