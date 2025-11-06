@@ -1,466 +1,620 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>Infinity · Admin + Builder (single file)</title>
-  <meta name="color-scheme" content="light dark"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Infinity Portal · Single File</title>
   <style>
     :root {
-      --bg: #0f172a;
-      --panel: #111827;
-      --muted: #94a3b8;
-      --accent: #38bdf8;
-      --danger: #f43f5e;
-      --good: #22c55e;
+      --bg: #0a0f1a;
+      --panel: #121829;
+      --card: #1a2033;
+      --accent: #00d4ff;
+      --accent2: #7b2cbf;
+      --text: #eef4ff;
+      --muted: #8a94a8;
+      --danger: #ef4444;
+      --success: #22c55e;
       --radius: 14px;
-      --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
-    * { box-sizing:border-box; }
+    * { box-sizing: border-box; }
     body {
-      margin:0;
-      background: radial-gradient(circle at top, #0f172a 10%, #020617 50%, #020617 100%);
-      color:#e2e8f0;
-      font-family:var(--font);
-      min-height:100vh;
+      margin: 0;
+      background: radial-gradient(circle at top, #10182a 0%, #060910 60%, #04050a 100%);
+      color: var(--text);
+      min-height: 100vh;
     }
-    header {
-      background:rgba(2,6,23,.6);
-      border-bottom:1px solid rgba(148,163,184,.15);
-      backdrop-filter:blur(10px);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:14px 16px;
-      position:sticky;
-      top:0;
-      z-index:10;
+    a { color: inherit; }
+
+    /* screens */
+    .screen {
+      display: none;
+      min-height: 100vh;
     }
-    .logo {
-      font-weight:800;
-      font-size:1.1rem;
-      letter-spacing:.04em;
-      display:flex;
-      gap:8px;
-      align-items:center;
+    .screen.show {
+      display: block;
     }
-    .badge { background:rgba(56,189,248,.12); border:1px solid rgba(56,189,248,.35); padding:4px 10px; border-radius:999px; font-size:.65rem; }
-    main { max-width:1200px; margin:0 auto; padding:24px 16px 80px; display:grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, .6fr); gap:20px; }
+
+    /* login */
+    #login-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 16px;
+    }
+    .login-box {
+      background: rgba(8, 10, 18, 0.6);
+      backdrop-filter: blur(9px);
+      border: 1px solid rgba(0, 212, 255, 0.14);
+      border-radius: 16px;
+      width: min(400px, 100%);
+      padding: 26px 22px 22px;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.4);
+    }
+    .login-title {
+      font-size: 21px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+    .login-sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+    input[type="text"],
+    input[type="password"],
+    input[type="email"],
+    textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(238, 244, 255, 0.05);
+      border-radius: 10px;
+      padding: 9px 10px;
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+    }
+    input:focus, textarea:focus {
+      border-color: rgba(0, 212, 255, 0.7);
+    }
+    .btn {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-weight: 600;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: transform .15s;
+    }
+    .btn:active {
+      transform: translateY(1px);
+    }
+    .error-msg {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fecaca;
+      border-radius: 10px;
+      padding: 8px 10px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      display: none;
+    }
+
+    /* main/app header */
+    #app-screen {
+      min-height: 100vh;
+    }
+    .topbar {
+      background: rgba(10, 14, 24, 0.9);
+      border-bottom: 1px solid rgba(0, 212, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 18px;
+      gap: 10px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(12px);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-title {
+      font-weight: 800;
+      letter-spacing: .08em;
+    }
+    .badge-ai {
+      background: rgba(0, 212, 255, 0.12);
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      border-radius: 999px;
+      font-size: 11px;
+      padding: 3px 9px;
+    }
+    .user-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .pill-btn {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 999px;
+      font-size: 12px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    .pill-btn.danger {
+      border-color: rgba(239, 68, 68, 0.2);
+      color: #fecaca;
+      background: rgba(239, 68, 68, 0.05);
+    }
+
+    /* layout */
+    .content {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px 14px 60px;
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 20px;
+    }
+    @media (max-width: 960px) {
+      .content {
+        grid-template-columns: 1fr;
+      }
+    }
     .card {
-      background:rgba(15,23,42,.35);
-      border:1px solid rgba(148,163,184,.08);
-      border-radius:var(--radius);
-      padding:16px 16px 14px;
-      backdrop-filter:blur(8px);
-      box-shadow:0 18px 60px rgba(0,0,0,.25);
+      background: rgba(12, 16, 26, 0.55);
+      border: 1px solid rgba(238, 244, 255, 0.03);
+      border-radius: 16px;
+      padding: 16px 16px 14px;
+      margin-bottom: 14px;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
     }
-    h2 { margin:0 0 10px; font-size:1rem; }
-    p.muted { margin:0 0 12px; color:var(--muted); font-size:.78rem; }
-    label { display:block; font-size:.7rem; margin-top:9px; margin-bottom:3px; color:rgba(226,232,240,.85); }
-    input, textarea, select {
-      width:100%;
-      background:rgba(15,23,42,.2);
-      border:1px solid rgba(148,163,184,.25);
-      border-radius:10px;
-      padding:7px 9px;
-      color:#e2e8f0;
-      font-family:inherit;
-      font-size:.78rem;
+    .section-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 12px;
     }
-    textarea { min-height:90px; resize:vertical; }
-    button {
-      background:linear-gradient(135deg, #38bdf8, #0ea5e9);
-      border:none;
-      border-radius:999px;
-      padding:7px 16px 7px;
-      color:#0f172a;
-      font-weight:700;
-      margin-top:10px;
-      cursor:pointer;
-      font-size:.72rem;
+    .apps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
     }
-    button.secondary {
-      background:rgba(15,23,42,.1);
-      border:1px solid rgba(148,163,184,.19);
-      color:#e2e8f0;
+    .app-link {
+      background: rgba(255,255,255,0.012);
+      border: 1px solid rgba(255,255,255,0.015);
+      border-radius: 12px;
+      padding: 12px 12px 10px;
+      text-decoration: none;
+      color: inherit;
+      transition: transform .12s;
     }
-    .two { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-    .list {
-      border:1px solid rgba(148,163,184,.13);
-      border-radius:10px;
-      max-height:210px;
-      overflow-y:auto;
-      background:rgba(15,23,42,.35);
-      margin-top:8px;
+    .app-link:hover {
+      transform: translateY(-2px);
+      border-color: rgba(0, 212, 255, 0.3);
     }
-    .list-item {
-      padding:6px 10px;
-      border-bottom:1px solid rgba(148,163,184,.04);
-      font-size:.7rem;
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
+    .app-title {
+      font-weight: 700;
+      margin-bottom: 3px;
     }
-    .list-item:last-child { border-bottom:none; }
-    .pill { background:rgba(148,163,184,.1); border:1px solid rgba(148,163,184,.1); border-radius:999px; padding:1px 8px; font-size:.6rem; }
-    .admin-only { border:1px solid rgba(250,250,250,.1); }
-    .hidden { display:none !important; }
-    .terminal {
-      background:rgba(2,6,23,.3);
-      border:1px solid rgba(148,163,184,.12);
-      border-radius:12px;
-      overflow:hidden;
-      height:210px;
-      display:flex;
-      flex-direction:column;
+    .small {
+      font-size: 12px;
+      color: var(--muted);
     }
-    .terminal-head { background:rgba(2,6,23,.4); padding:5px 10px; font-size:.65rem; display:flex; align-items:center; gap:5px; }
-    .dot { width:8px; height:8px; border-radius:50%; }
-    .d-red { background:#f43f5e; }
-    .d-yellow { background:#f59e0b; }
-    .d-green { background:#22c55e; }
-    .terminal-body { flex:1; overflow-y:auto; padding:6px 10px; font-family: ui-monospace, SFMono-Regular, SFMono-Regular, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size:.65rem; line-height:1.4; }
-    .terminal-input { display:flex; gap:6px; padding:7px 10px 10px; }
-    .terminal-input input { flex:1; font-family:inherit; }
-    .status { margin-top:6px; font-size:.7rem; }
-    .ok { color:var(--good); }
-    .err { color:var(--danger); }
-    @media (max-width:900px){
-      main { grid-template-columns:1fr; }
+
+    /* activity log */
+    #activity-log {
+      max-height: 250px;
+      overflow-y: auto;
     }
+    .act-item {
+      background: rgba(255,255,255,0.012);
+      border: 1px solid rgba(255,255,255,0.015);
+      border-left: 2px solid var(--accent);
+      border-radius: 9px;
+      padding: 7px 9px 5px;
+      margin-bottom: 9px;
+      font-size: 12.5px;
+    }
+    .act-time {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    /* admin panel */
+    #admin-panel {
+      background: rgba(10, 10, 10, 0.85);
+      border-left: 1.4px solid rgba(0, 212, 255, 0.14);
+      position: fixed;
+      top: 52px;
+      right: 0;
+      width: min(360px, 100%);
+      bottom: 0;
+      padding: 12px 10px 40px;
+      overflow-y: auto;
+      display: none;
+      z-index: 200;
+      backdrop-filter: blur(14px);
+    }
+    #admin-panel.show { display: block; }
+    .admin-title {
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .admin-note {
+      font-size: 11.5px;
+      color: #f97316;
+      margin-bottom: 10px;
+      background: rgba(249, 115, 22, 0.07);
+      border: 1px solid rgba(249, 115, 22, 0.3);
+      border-radius: 10px;
+      padding: 6px 7px;
+    }
+    .admin-group { margin-bottom: 11px; }
+    .admin-group small { color: var(--muted); font-size: 11px; }
+
+    .status-ok { color: #bbf7d0; font-size: 12px; }
+    .status-bad { color: #fecaca; font-size: 12px; }
+
+    textarea#gh-file-content {
+      min-height: 90px;
+      resize: vertical;
+      font-family: ui-monospace, SFMono-Regular, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
-  <header>
-    <div class="logo">
-      <span>INFINITY</span>
-      <span class="badge" id="login-indicator">not logged in</span>
-    </div>
-    <div style="display:flex; gap:8px;">
-      <input id="login-name" placeholder="login as..." style="width:140px;"/>
-      <button onclick="doLogin()">Login</button>
-    </div>
-  </header>
 
-  <main>
-    <!-- LEFT: user visible -->
-    <section>
-      <div class="card">
-        <h2>Uploader / Collector</h2>
-        <p class="muted">Drop files here. We store them in browser storage. We do <b>not</b> delete previous ones.</p>
-        <input type="file" id="file-input" multiple onchange="handleFiles(this.files)">
-        <label for="free-text">or paste script / notes</label>
-        <textarea id="free-text" placeholder="paste HTML / JS / notes / user profile ..."></textarea>
-        <button onclick="saveFreeText()">Add to repository</button>
-        <div class="status" id="upload-status"></div>
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen" class="screen show">
+    <div class="login-box">
+      <div class="login-title">Infinity Portal Login</div>
+      <div class="login-sub">Local login, no server. Type your name. <b>Kris</b> unlocks admin.</div>
+      <div id="login-error" class="error-msg"></div>
+      <label for="login-name">Your name</label>
+      <input id="login-name" type="text" placeholder="e.g. Kris" autocomplete="off" />
+      <label for="login-pass" style="margin-top:10px;">Passcode (optional for now)</label>
+      <input id="login-pass" type="password" placeholder="leave blank if none" />
 
-        <h3 style="font-size:.75rem;margin-top:14px;">Stored Items (local)</h3>
-        <div class="list" id="repo-list"></div>
+      <button class="btn" style="margin-top:16px;width:100%;" onclick="handleLogin()">Enter Portal</button>
+    </div>
+  </div>
+
+  <!-- APP SCREEN -->
+  <div id="app-screen" class="screen">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-title">INFINITY</div>
+        <div class="badge-ai">AI shadow agent · LIVE</div>
       </div>
+      <div class="user-box">
+        <div id="top-username"></div>
+        <button class="pill-btn" id="admin-toggle-btn" onclick="toggleAdmin()" style="display:none;">Admin</button>
+        <button class="pill-btn danger" onclick="handleLogout()">Logout</button>
+      </div>
+    </div>
 
-      <div class="card">
-        <h2>Terminal / Builder</h2>
-        <p class="muted">Talk to your page. We’ll store each command as an event and make “generated scripts” out of it.</p>
-        <div class="terminal" id="term">
-          <div class="terminal-head">
-            <div class="dot d-red"></div>
-            <div class="dot d-yellow"></div>
-            <div class="dot d-green"></div>
-            <span style="margin-left:6px;">/infinity/agent</span>
-          </div>
-          <div class="terminal-body" id="term-body"></div>
-          <div class="terminal-input">
-            <input id="term-input" placeholder="ex: build landing page with gallery" onkeydown="if(event.key==='Enter'){runTerminal();}"/>
-            <button onclick="runTerminal()">Run</button>
-          </div>
+    <div class="content">
+      <!-- LEFT -->
+      <div>
+        <div class="card">
+          <div class="section-title">Welcome back, <span id="welcome-name"></span> 🚀</div>
+          <p class="small">Your secure Infinity space is active. Upload code, let the agent rewrite it, and push to GitHub from here.</p>
         </div>
-      </div>
-    </section>
 
-    <!-- RIGHT: admin, github, knowledge -->
-    <section>
-      <div class="card admin-only hidden" id="admin-panel">
-        <h2>Admin (Kris)</h2>
-        <p class="muted">This pane only appears when logged in as <b>Kris</b>. Everyone else can’t see it.</p>
-
-        <label>GitHub Personal Access Token</label>
-        <input id="gh-token" placeholder="paste token here (we store locally)">
-
-        <div class="two">
-          <div>
-            <label>Owner</label>
-            <input id="gh-owner" placeholder="your-github-name">
-          </div>
-          <div>
-            <label>Repo</label>
-            <input id="gh-repo" placeholder="your-repo">
+        <div class="card">
+          <div class="section-title">Apps / Pages / Live</div>
+          <div class="apps-grid">
+            <a class="app-link" href="#!" onclick="logActivity('portal_open','Portal UI opened');alert('This is a placeholder link.');">
+              <div class="app-title">Portal UI</div>
+              <div class="small">Day-to-day dashboard</div>
+            </a>
+            <a class="app-link" href="#!" onclick="alert('Rogers AI placeholder here'); logActivity('portal_open','Rogers AI opened');">
+              <div class="app-title">Rogers AI</div>
+              <div class="small">Chat/terminal style</div>
+            </a>
+            <a class="app-link" href="#!" onclick="alert('Live tools placeholder'); logActivity('portal_open','Live tools opened');">
+              <div class="app-title">Live / Stream</div>
+              <div class="small">Camera • Mic • Screen</div>
+            </a>
+            <a class="app-link" href="#!" onclick="alert('Uploader placeholder'); logActivity('upload_open','Uploader opened');">
+              <div class="app-title">Uploader</div>
+              <div class="small">Drop code/snippets</div>
+            </a>
           </div>
         </div>
 
-        <label>Path in repo</label>
-        <input id="gh-path" value="admin/collected/activity.json">
-
-        <label>Content to push</label>
-        <textarea id="gh-content" placeholder="click 'Build content from storage' below"></textarea>
-
-        <button onclick="buildContentFromStorage()">Build content from storage</button>
-        <button onclick="commitToGithub()">Push to GitHub</button>
-        <div class="status" id="gh-status"></div>
-
-        <p class="muted" style="margin-top:12px;">
-          To get a token: GitHub → Settings → Developer settings → Personal access tokens (classic) → New token → tick <b>repo</b> → copy.  
-          You only do this once. We keep it in localStorage on this machine.
-        </p>
+        <div class="card">
+          <div class="section-title">Activity log</div>
+          <div id="activity-log"></div>
+          <button class="pill-btn danger" style="margin-top:10px;" onclick="clearActivity()">Clear activity</button>
+        </div>
       </div>
 
-      <div class="card">
-        <h2>Knowledge Base (live)</h2>
-        <p class="muted">We rebuild this from whatever is in localStorage. Nothing is deleted.</p>
-        <button class="secondary" onclick="rebuildKnowledge()">Rebuild KB</button>
-        <div class="status" id="kb-status"></div>
-        <div id="kb-preview" style="font-size:.67rem;white-space:pre-wrap;margin-top:6px;max-height:180px;overflow-y:auto;"></div>
+      <!-- RIGHT -->
+      <div>
+        <div class="card">
+          <div class="section-title">Quick Script Drop</div>
+          <p class="small">Paste HTML/JS/CSS here and the agent will keep it in local storage. Admin can push to GitHub.</p>
+          <textarea id="quick-script" placeholder="Paste code here..."></textarea>
+          <button class="btn" style="margin-top:10px;" onclick="saveLocalSnippet()">Save locally</button>
+          <div id="local-snippet-status" class="small" style="margin-top:6px;"></div>
+        </div>
+
+        <div class="card">
+          <div class="section-title">Saved snippets (local)</div>
+          <div id="snippet-list" class="small"></div>
+        </div>
       </div>
-    </section>
-  </main>
+    </div>
+  </div>
+
+  <!-- ADMIN PANEL (only for Kris) -->
+  <div id="admin-panel">
+    <div class="admin-title">Admin · GitHub Writer</div>
+    <div class="admin-note">
+      Only shows for Kris. Browser will talk straight to GitHub. If your browser blocks it (CORS), serve this page from localhost or a domain.
+    </div>
+
+    <div class="admin-group">
+      <label for="gh-user">GitHub Repo (owner/repo)</label>
+      <input id="gh-user" type="text" placeholder="pewpi-infinity/Infinity-Vectors" />
+      <small>Use your real repo name.</small>
+    </div>
+
+    <div class="admin-group">
+      <label for="gh-token">Personal Access Token</label>
+      <input id="gh-token" type="password" placeholder="ghp_..." />
+      <small>Make a PAT on GitHub → Settings → Developer settings → PAT. Scope: <code>repo</code>.</small>
+    </div>
+
+    <div class="admin-group">
+      <label for="gh-path">File path in repo</label>
+      <input id="gh-path" type="text" value="web/infinity/index.html" />
+      <small>Example: <code>index.html</code> or <code>web/infinity/index.html</code></small>
+    </div>
+
+    <div class="admin-group">
+      <label for="gh-message">Commit message</label>
+      <input id="gh-message" type="text" value="Infinity auto-commit from portal" />
+    </div>
+
+    <div class="admin-group">
+      <label for="gh-file-content">File content to push</label>
+      <textarea id="gh-file-content" placeholder="Paste the page / generated script here..."></textarea>
+    </div>
+
+    <button class="btn" onclick="pushToGithub()">Push to GitHub</button>
+    <div id="gh-status" style="margin-top:8px;" class="small"></div>
+
+    <hr style="margin:14px 0;border:0;border-top:1px solid rgba(255,255,255,0.03);" />
+
+    <div class="admin-group">
+      <div class="admin-title">Admin tools</div>
+      <button class="pill-btn" onclick="dumpLocal()">Dump localStorage to console</button>
+      <button class="pill-btn danger" onclick="localStorage.clear();alert('localStorage cleared');">Wipe localStorage</button>
+    </div>
+  </div>
 
   <script>
-    // ========= STORAGE KEYS (never deleting by default) =========
-    const KEY_FILES   = 'infinity_files';      // array of {name, type, content, ts}
-    const KEY_TEXT    = 'infinity_text_snips'; // array of {content, ts}
-    const KEY_EVENTS  = 'infinity_events';     // array of {cmd, ts, generated?}
-    const KEY_USER    = 'infinity_user';
-    const KEY_GH      = 'infinity_admin_token';
+    // ========= BASIC LOGIN =========
+    const ADMIN_NAME = "kris"; // case-insensitive
+    const LS_USER_KEY = "infinity_current_user";
+    const LS_ACTIVITY_KEY = "infinity_activity";
+    const LS_SNIPPETS_KEY = "infinity_snippets";
+    const LS_GH_SETTINGS = "infinity_github_settings";
 
-    // ========= INIT =========
-    (function init(){
-      const u = localStorage.getItem(KEY_USER);
-      if (u) setLoginUI(u);
-      renderRepoList();
-      rebuildKnowledge();
-      // restore token into field if admin
-      if (u === 'Kris') {
-        document.getElementById('admin-panel').classList.remove('hidden');
-        const tok = localStorage.getItem(KEY_GH);
-        if (tok) document.getElementById('gh-token').value = tok;
+    function handleLogin() {
+      const name = document.getElementById("login-name").value.trim();
+      const err = document.getElementById("login-error");
+      if (!name) {
+        err.textContent = "Enter your name.";
+        err.style.display = "block";
+        return;
+      }
+      err.style.display = "none";
+      localStorage.setItem(LS_USER_KEY, name);
+      showApp(name);
+      logActivity("login", "User logged in: " + name);
+    }
+
+    function showApp(name) {
+      document.getElementById("login-screen").classList.remove("show");
+      document.getElementById("app-screen").classList.add("show");
+      document.getElementById("top-username").textContent = name;
+      document.getElementById("welcome-name").textContent = name;
+      // admin?
+      if (name.toLowerCase() === ADMIN_NAME) {
+        document.getElementById("admin-toggle-btn").style.display = "inline-flex";
+      } else {
+        document.getElementById("admin-toggle-btn").style.display = "none";
+        document.getElementById("admin-panel").classList.remove("show");
+      }
+      renderActivity();
+      renderSnippets();
+      loadGithubSettings();
+    }
+
+    function handleLogout() {
+      const u = localStorage.getItem(LS_USER_KEY);
+      logActivity("logout", "User logged out: " + u);
+      localStorage.removeItem(LS_USER_KEY);
+      document.getElementById("app-screen").classList.remove("show");
+      document.getElementById("login-screen").classList.add("show");
+    }
+
+    // on load, restore session
+    (function init() {
+      const existing = localStorage.getItem(LS_USER_KEY);
+      if (existing) {
+        showApp(existing);
       }
     })();
 
-    // ========= LOGIN =========
-    function doLogin(){
-      const name = document.getElementById('login-name').value.trim();
-      if (!name) return;
-      localStorage.setItem(KEY_USER, name);
-      setLoginUI(name);
-      if (name === 'Kris') {
-        document.getElementById('admin-panel').classList.remove('hidden');
-        const tok = localStorage.getItem(KEY_GH);
-        if (tok) document.getElementById('gh-token').value = tok;
-      } else {
-        document.getElementById('admin-panel').classList.add('hidden');
-      }
-    }
-    function setLoginUI(name){
-      document.getElementById('login-indicator').textContent = 'signed in as '+name;
-    }
-
-    // ========= FILE UPLOAD =========
-    function handleFiles(fileList){
-      if (!fileList || !fileList.length) return;
-      const arr = JSON.parse(localStorage.getItem(KEY_FILES) || '[]');
-      let pending = fileList.length;
-      for (const file of fileList) {
-        const reader = new FileReader();
-        reader.onload = e => {
-          arr.push({
-            name: file.name,
-            type: file.type || 'text/plain',
-            content: e.target.result,
-            ts: Date.now()
-          });
-          pending--;
-          if (pending === 0) {
-            localStorage.setItem(KEY_FILES, JSON.stringify(arr));
-            document.getElementById('upload-status').textContent = 'stored '+fileList.length+' file(s) — nothing was deleted.';
-            renderRepoList();
-            rebuildKnowledge();
-          }
-        };
-        reader.readAsText(file);
-      }
-    }
-
-    // ========= FREE TEXT SAVE =========
-    function saveFreeText(){
-      const val = document.getElementById('free-text').value.trim();
-      if (!val) return;
-      const arr = JSON.parse(localStorage.getItem(KEY_TEXT) || '[]');
-      arr.push({content: val, ts: Date.now()});
-      localStorage.setItem(KEY_TEXT, JSON.stringify(arr));
-      document.getElementById('upload-status').textContent = 'text snippet saved. total: '+arr.length;
-      document.getElementById('free-text').value = '';
-      renderRepoList();
-      rebuildKnowledge();
-    }
-
-    // ========= RENDER REPO =========
-    function renderRepoList(){
-      const files = JSON.parse(localStorage.getItem(KEY_FILES) || '[]');
-      const texts = JSON.parse(localStorage.getItem(KEY_TEXT)  || '[]');
-      const box = document.getElementById('repo-list');
-      let html = '';
-      files.forEach(f => {
-        html += `<div class="list-item"><span>${f.name}</span><span class="pill">file</span></div>`;
+    // ========= ACTIVITY =========
+    function logActivity(type, msg) {
+      const arr = JSON.parse(localStorage.getItem(LS_ACTIVITY_KEY) || "[]");
+      arr.push({
+        ts: new Date().toISOString(),
+        type,
+        msg
       });
-      texts.forEach((t,i) => {
-        html += `<div class="list-item"><span>snippet-${i+1}</span><span class="pill">text</span></div>`;
-      });
-      box.innerHTML = html || '<div class="list-item">empty</div>';
+      localStorage.setItem(LS_ACTIVITY_KEY, JSON.stringify(arr));
+      renderActivity();
     }
 
-    // ========= TERMINAL / BUILDER =========
-    function runTerminal(){
-      const input = document.getElementById('term-input');
-      const cmd = input.value.trim();
-      if (!cmd) return;
-      appendTerm('> '+cmd);
-      input.value = '';
-
-      // store event
-      const events = JSON.parse(localStorage.getItem(KEY_EVENTS) || '[]');
-      const evt = {cmd, ts: Date.now()};
-      events.push(evt);
-      localStorage.setItem(KEY_EVENTS, JSON.stringify(events));
-
-      // FAKE "script builder" – builds HTML skeleton from prompt
-      const generated = buildHtmlFromPrompt(cmd);
-      appendTerm(generated);
-      // also store generated into text-snips
-      const texts = JSON.parse(localStorage.getItem(KEY_TEXT) || '[]');
-      texts.push({content: generated, ts: Date.now()});
-      localStorage.setItem(KEY_TEXT, JSON.stringify(texts));
-      renderRepoList();
-      rebuildKnowledge();
-    }
-    function appendTerm(line){
-      const body = document.getElementById('term-body');
-      const div = document.createElement('div');
-      div.textContent = line;
-      body.appendChild(div);
-      body.scrollTop = body.scrollHeight;
-    }
-    function buildHtmlFromPrompt(cmd){
-      // super simple block so it doesn't stay "thin"
-      return [
-        "[builder] generated chunk:",
-        "<section class='infinity-block'>",
-        "  <h2>"+cmd.replace(/</g,'&lt;')+"</h2>",
-        "  <p>auto-generated by page agent at "+new Date().toISOString()+"</p>",
-        "  <div class='slot'>attach media / uploads / ai stream here</div>",
-        "</section>"
-      ].join("\n");
-    }
-
-    // ========= KB REBUILD =========
-    function rebuildKnowledge(){
-      const files = JSON.parse(localStorage.getItem(KEY_FILES) || '[]');
-      const texts = JSON.parse(localStorage.getItem(KEY_TEXT)  || '[]');
-      const events = JSON.parse(localStorage.getItem(KEY_EVENTS) || '[]');
-
-      const kb = {
-        summary: "local kb built at "+new Date().toISOString(),
-        fileCount: files.length,
-        textCount: texts.length,
-        eventCount: events.length,
-        files: files.map(f => ({name:f.name, ts:f.ts})),
-        lastText: texts.slice(-3),
-        lastEvents: events.slice(-3)
-      };
-      document.getElementById('kb-status').textContent = 'KB rebuilt: '+files.length+' files, '+texts.length+' text, '+events.length+' events.';
-      document.getElementById('kb-preview').textContent = JSON.stringify(kb, null, 2);
-    }
-
-    // ========= GITHUB =========
-    async function commitToGithub(){
-      const user = localStorage.getItem(KEY_USER) || '';
-      if (user !== 'Kris') {
-        document.getElementById('gh-status').textContent = '❌ only Kris can push';
+    function renderActivity() {
+      const box = document.getElementById("activity-log");
+      const arr = JSON.parse(localStorage.getItem(LS_ACTIVITY_KEY) || "[]").reverse();
+      if (arr.length === 0) {
+        box.innerHTML = "<div class='small'>No activity yet.</div>";
         return;
       }
-      const token = document.getElementById('gh-token').value.trim();
-      const owner = document.getElementById('gh-owner').value.trim();
-      const repo  = document.getElementById('gh-repo').value.trim();
-      const path  = document.getElementById('gh-path').value.trim();
-      const content = document.getElementById('gh-content').value;
+      box.innerHTML = arr.map(item => {
+        const t = new Date(item.ts).toLocaleString();
+        return `<div class="act-item">
+          <div><b>${item.type}</b> — ${item.msg}</div>
+          <div class="act-time">${t}</div>
+        </div>`;
+      }).join("");
+    }
 
-      if (!token || !owner || !repo || !path) {
-        document.getElementById('gh-status').textContent = '❌ missing token/owner/repo/path';
+    function clearActivity() {
+      if (!confirm("Clear entire activity log?")) return;
+      localStorage.setItem(LS_ACTIVITY_KEY, "[]");
+      renderActivity();
+    }
+
+    // ========= UPLOAD / SNIPPET SIDE =========
+    function saveLocalSnippet() {
+      const txt = document.getElementById("quick-script").value;
+      if (!txt.trim()) {
+        document.getElementById("local-snippet-status").textContent = "Nothing to save.";
         return;
       }
+      const arr = JSON.parse(localStorage.getItem(LS_SNIPPETS_KEY) || "[]");
+      arr.push({
+        ts: Date.now(),
+        content: txt
+      });
+      localStorage.setItem(LS_SNIPPETS_KEY, JSON.stringify(arr));
+      document.getElementById("local-snippet-status").textContent = "Saved locally.";
+      logActivity("snippet_save","Snippet saved to local");
+      renderSnippets();
+    }
 
-      // persist token so you don’t have to paste again
-      localStorage.setItem(KEY_GH, token);
+    function renderSnippets() {
+      const arr = JSON.parse(localStorage.getItem(LS_SNIPPETS_KEY) || "[]").reverse();
+      const box = document.getElementById("snippet-list");
+      if (arr.length === 0) {
+        box.textContent = "No saved snippets yet.";
+        return;
+      }
+      box.innerHTML = arr.map((s, i) => {
+        return `<div style="margin-bottom:6px;">
+          <b>#${arr.length - i}</b> · ${new Date(s.ts).toLocaleString()}
+          <div style="white-space:pre-wrap;background:rgba(0,0,0,0.25);padding:3px 4px;border-radius:6px;margin-top:3px;max-height:80px;overflow-y:auto;">${escapeHtml(s.content)}</div>
+        </div>`;
+      }).join("");
+    }
 
-      document.getElementById('gh-status').textContent = 'checking github…';
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, function(m) {
+        return ({
+          "&":"&amp;",
+          "<":"&lt;",
+          ">":"&gt;",
+          '"':"&quot;",
+          "'":"&#39;"
+        })[m];
+      });
+    }
+
+    // ========= ADMIN PANEL =========
+    function toggleAdmin() {
+      const p = document.getElementById("admin-panel");
+      p.classList.toggle("show");
+    }
+
+    function loadGithubSettings() {
+      const raw = localStorage.getItem(LS_GH_SETTINGS);
+      if (!raw) return;
       try {
-        const existing = await githubGetFile(token, owner, repo, path);
-        const sha = existing ? existing.sha : null;
-        document.getElementById('gh-status').textContent = existing ? 'updating file…' : 'creating file…';
-        const res = await githubPutFile(token, owner, repo, path, content, sha);
-        document.getElementById('gh-status').textContent = '✅ pushed to '+res.content.path;
-      } catch (e) {
-        document.getElementById('gh-status').textContent = '❌ '+e.message;
+        const cfg = JSON.parse(raw);
+        if (cfg.repo) document.getElementById("gh-user").value = cfg.repo;
+        if (cfg.token) document.getElementById("gh-token").value = cfg.token;
+        if (cfg.path) document.getElementById("gh-path").value = cfg.path;
+      } catch(e) {}
+    }
+
+    async function pushToGithub() {
+      const repo = document.getElementById("gh-user").value.trim();
+      const token = document.getElementById("gh-token").value.trim();
+      const path = document.getElementById("gh-path").value.trim();
+      const msg = document.getElementById("gh-message").value.trim() || "Infinity auto commit";
+      const content = document.getElementById("gh-file-content").value;
+      const stat = document.getElementById("gh-status");
+
+      if (!repo || !token || !path) {
+        stat.innerHTML = "<span class='status-bad'>Repo / token / path required.</span>";
+        return;
       }
-    }
 
-    async function githubGetFile(token, owner, repo, path){
-      const url = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`;
-      const res = await fetch(url, {
-        headers: {
-          Authorization: `token ${token}`,
-          Accept: "application/vnd.github+json"
+      // save settings
+      localStorage.setItem(LS_GH_SETTINGS, JSON.stringify({ repo, token, path }));
+
+      // GitHub needs base64 content
+      const b64 = btoa(unescape(encodeURIComponent(content)));
+
+      // first, try to get existing file to get SHA
+      const url = `https://api.github.com/repos/${repo}/contents/${path}`;
+      let sha = null;
+      try {
+        const resp = await fetch(url, {
+          headers: { "Authorization": "token " + token }
+        });
+        if (resp.ok) {
+          const data = await resp.json();
+          sha = data.sha;
         }
-      });
-      if (res.status === 404) return null;
-      if (!res.ok) throw new Error('GET '+res.status);
-      return await res.json();
-    }
+      } catch(e) {
+        // ignore; maybe file doesn't exist
+      }
 
-    async function githubPutFile(token, owner, repo, path, content, sha=null){
       const body = {
-        message: "infinity auto commit: "+path,
-        content: btoa(unescape(encodeURIComponent(content)))
+        message: msg,
+        content: b64
       };
       if (sha) body.sha = sha;
-      const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `token ${token}`,
-          Accept: "application/vnd.github+json"
-        },
-        body: JSON.stringify(body)
-      });
-      if (!res.ok) {
-        const txt = await res.text();
-        throw new Error('PUT '+res.status+' '+txt);
-      }
-      return await res.json();
-    }
 
-    function buildContentFromStorage(){
-      const files = JSON.parse(localStorage.getItem(KEY_FILES) || '[]');
-      const texts = JSON.parse(localStorage.getItem(KEY_TEXT)  || '[]');
-      const events = JSON.parse(localStorage.getItem(KEY_EVENTS) || '[]');
-
-      // we append, we don't delete
-      const payload = {
-        collectedAt: new Date().toISOString(),
-        files,
-        texts,
-        events
-      };
-      document.getElementById('gh-content').value = JSON.stringify(payload, null, 2);
-      document.getElementById('gh-status').textContent = 'built content from storage, ready to push.';
-    }
-  </script>
-</body>
-</html>
+      try {
+        const resp = await fetch(url, {
+          method: "PUT",
+          headers: {
+            "Authorization": "token " + token,
+            "Accept": "application/vnd.github+json"
+          },
+          body: JSON.stringify(body)
+        });
+        const data = await resp.json();
+        if (resp.ok) {
+          stat.innerHTML = "<span class='status-ok'>Pushed to GitHub: " + (data.content && data.content.path ? data.content.path : "") + "</span>";
+          logActivity("github_push","Pushed " + path + " to " + repo);
+        } else {
+          stat.innerHTML = "<span class='status-bad'>GitHub error: " + (data.message || resp.status) + "</span>";
+        }
+      } catch(e) {
+        stat.innerHTML = "<span class='status-bad'>Network/Browser blocke
