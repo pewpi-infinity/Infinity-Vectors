@@ -1,587 +1,466 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Infinity Portal · Single File Build</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <title>Infinity · Admin + Builder (single file)</title>
+  <meta name="color-scheme" content="light dark"/>
   <style>
     :root {
-      --bg-dark: #0a0e1a;
-      --bg-panel: #141827;
-      --bg-card: #1a1f35;
-      --accent-primary: #00d4ff;
-      --accent-secondary: #7b2cbf;
-      --text-primary: #e9ecef;
-      --text-muted: #8b95a8;
-      --border-glow: rgba(0, 212, 255, 0.3);
-      --success-color: #22c55e;
+      --bg: #0f172a;
+      --panel: #111827;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --danger: #f43f5e;
+      --good: #22c55e;
+      --radius: 14px;
+      --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
-    * { box-sizing: border-box; margin:0; padding:0; }
+    * { box-sizing:border-box; }
     body {
-      background: linear-gradient(135deg, #0a0e1a 0%, #1a1f35 100%);
-      min-height: 100vh;
-      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-      color: var(--text-primary);
+      margin:0;
+      background: radial-gradient(circle at top, #0f172a 10%, #020617 50%, #020617 100%);
+      color:#e2e8f0;
+      font-family:var(--font);
+      min-height:100vh;
     }
-
-    /* -------- login screen ---------- */
-    #login-screen {
-      display: none;
-      min-height: 100vh;
+    header {
+      background:rgba(2,6,23,.6);
+      border-bottom:1px solid rgba(148,163,184,.15);
+      backdrop-filter:blur(10px);
       display:flex;
-      flex-direction:column;
       align-items:center;
-      justify-content:center;
-      gap:1rem;
-      padding:1.5rem;
-    }
-    .login-card {
-      background: rgba(10,14,26,.85);
-      border: 1px solid rgba(0,212,255,.16);
-      border-radius: 16px;
-      padding: 1.4rem 1.3rem 1.1rem;
-      width: min(360px, 100%);
-      box-shadow: 0 18px 30px rgba(0,0,0,.35);
-    }
-    .login-card h1 {
-      font-size: 1rem;
-      margin-bottom: .45rem;
-      background: linear-gradient(135deg, #00d4ff, #fff);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-    }
-    .login-card label {
-      display:block;
-      font-size:.65rem;
-      margin-top:.35rem;
-      margin-bottom:.2rem;
-      color: rgba(233,236,239,.8);
-    }
-    .login-card input {
-      width: 100%;
-      background: rgba(20,24,39,.7);
-      border: 1px solid rgba(255,255,255,.05);
-      border-radius: .45rem;
-      padding: .4rem .5rem;
-      color:#fff;
-      font-size:.7rem;
-    }
-    .login-actions {
-      display:flex;
-      gap:.45rem;
-      margin-top:.6rem;
-    }
-    .btn {
-      border:none;
-      border-radius:.45rem;
-      padding:.35rem .7rem;
-      font-size:.65rem;
-      cursor:pointer;
-      font-weight:600;
-    }
-    .btn-primary {
-      background: var(--accent-primary);
-      color:#000;
-    }
-    .btn-ghost {
-      background: rgba(255,255,255,.05);
-      color:#fff;
-      border:1px solid rgba(255,255,255,.03);
-    }
-    .login-foot {
-      margin-top:.55rem;
-      font-size:.55rem;
-      color: rgba(233,236,239,.5);
-    }
-
-    /* ---------- header / layout ---------- */
-    #app-shell { display:none; min-height:100vh; }
-    .header {
-      background: #141827aa;
-      border-bottom:1px solid rgba(0,212,255,.15);
-      display:flex;
       justify-content:space-between;
-      align-items:center;
-      padding: .8rem 1.2rem;
-      backdrop-filter: blur(8px);
+      padding:14px 16px;
       position:sticky;
       top:0;
-      z-index:5;
+      z-index:10;
     }
-    .logo-area { display:flex; gap:.5rem; align-items:center; }
-    .logo-text {
-      font-weight:900;
-      letter-spacing:1.4px;
-      background: linear-gradient(135deg, #00d4ff, #7b2cbf);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
+    .logo {
+      font-weight:800;
       font-size:1.1rem;
-    }
-    .ai-badge {
-      font-size:.58rem;
-      background: rgba(0,212,255,.08);
-      border: 1px solid rgba(0,212,255,.25);
-      padding:.2rem .4rem;
-      border-radius:999px;
-    }
-    .user-info { display:flex; gap:.6rem; align-items:center; }
-    .user-name { font-size:.65rem; }
-    .logout-btn {
-      background: rgba(239,68,68,.08);
-      border:1px solid rgba(239,68,68,.35);
-      color:#fca5a5;
-      border-radius:.4rem;
-      padding:.25rem .6rem;
-      font-size:.62rem;
-      cursor:pointer;
-    }
-
-    .container {
-      max-width:1200px;
-      margin: 1.2rem auto 1.5rem;
-      padding: 0 .8rem 1.2rem;
-      display:grid;
-      grid-template-columns: minmax(0,1fr) 260px;
-      gap:1rem;
-    }
-    @media (max-width: 900px) {
-      .container { grid-template-columns: 1fr; }
-    }
-
-    /* ---------- main panel ---------- */
-    .panel {
-      background: rgba(20,24,39,.5);
-      border:1px solid rgba(0,212,255,.1);
-      border-radius:1rem;
-      padding:1rem;
-      box-shadow:0 10px 30px rgba(0,0,0,.38);
-    }
-    .welcome-title {
-      font-size:1.3rem;
-      margin-bottom:.45rem;
-    }
-    .welcome-sub {
-      font-size:.7rem;
-      color: var(--text-muted);
-      margin-bottom:.6rem;
-    }
-    .stats-grid {
-      display:grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap:.6rem;
-    }
-    .stat-card {
-      background: rgba(10,14,26,.4);
-      border:1px solid rgba(0,212,255,.08);
-      border-radius:.6rem;
-      padding:.6rem .55rem;
-    }
-    .stat-label { font-size:.55rem; color:var(--text-muted); text-transform:uppercase; }
-    .stat-value { font-size:1.1rem; margin-top:.2rem; }
-
-    /* activity log */
-    .activity-section { margin-top:1rem; }
-    .activity-section h2 { font-size:.8rem; margin-bottom:.5rem; display:flex; gap:.35rem; align-items:center; }
-    .activity-log {
-      max-height:420px;
-      overflow-y:auto;
+      letter-spacing:.04em;
       display:flex;
-      flex-direction:column;
-      gap:.45rem;
-    }
-    .activity-item {
-      background: rgba(9,12,21,.4);
-      border-left:3px solid var(--accent-primary);
-      border-radius:.45rem;
-      padding:.4rem .5rem .5rem;
-    }
-    .activity-time { font-size:.52rem; color:var(--text-muted); }
-    .activity-action { font-size:.7rem; font-weight:600; margin-top:.1rem; }
-    .activity-details { font-size:.6rem; color:var(--text-muted); margin-top:.1rem; }
-    .activity-narrator {
-      margin-top:.3rem;
-      background: rgba(0,212,255,.02);
-      border-left:2px solid rgba(0,212,255,.7);
-      padding:.25rem .4rem;
-      font-size:.55rem;
-      color: var(--accent-primary);
-      border-radius:.4rem;
-    }
-
-    /* ---------- sidebar ---------- */
-    .sidebar {
-      display:flex;
-      flex-direction:column;
-      gap:1rem;
-    }
-    .sidebar-card {
-      background: rgba(20,24,39,.5);
-      border:1px solid rgba(0,212,255,.1);
-      border-radius:1rem;
-      padding:.7rem .6rem .65rem;
-    }
-    .sidebar-card h3 {
-      font-size:.7rem;
-      margin-bottom:.45rem;
-    }
-    .link-btn {
-      display:block;
-      width:100%;
-      background: rgba(0,212,255,.04);
-      border:1px solid rgba(0,212,255,.12);
-      border-radius:.4rem;
-      padding:.4rem .5rem;
-      font-size:.6rem;
-      color: #fff;
-      text-align:left;
-      cursor:pointer;
-      margin-bottom:.3rem;
-    }
-
-    /* ---------- 3D cube ---------- */
-    .cube-wrap {
-      perspective: 600px;
-      width:140px;
-      height:140px;
-      margin-top:.4rem;
-    }
-    .cube {
-      width:100%;
-      height:100%;
-      position:relative;
-      transform-style:preserve-3d;
-      animation: spin 7s linear infinite;
-    }
-    .cube-face {
-      position:absolute;
-      width:100%;
-      height:100%;
-      background: linear-gradient(135deg, rgba(0,212,255,.45), rgba(123,44,191,.25));
-      border:1px solid rgba(0,212,255,.35);
-      border-radius:.6rem;
-      display:flex;
+      gap:8px;
       align-items:center;
-      justify-content:center;
-      font-size:.6rem;
-      color:#fff;
     }
-    .face-front { transform: translateZ(70px); }
-    .face-back { transform: rotateY(180deg) translateZ(70px); }
-    .face-right { transform: rotateY(90deg) translateZ(70px); }
-    .face-left { transform: rotateY(-90deg) translateZ(70px); }
-    .face-top { transform: rotateX(90deg) translateZ(70px); }
-    .face-bottom { transform: rotateX(-90deg) translateZ(70px); }
-    @keyframes spin {
-      from { transform: rotateX(0deg) rotateY(0deg); }
-      to   { transform: rotateX(360deg) rotateY(360deg); }
+    .badge { background:rgba(56,189,248,.12); border:1px solid rgba(56,189,248,.35); padding:4px 10px; border-radius:999px; font-size:.65rem; }
+    main { max-width:1200px; margin:0 auto; padding:24px 16px 80px; display:grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, .6fr); gap:20px; }
+    .card {
+      background:rgba(15,23,42,.35);
+      border:1px solid rgba(148,163,184,.08);
+      border-radius:var(--radius);
+      padding:16px 16px 14px;
+      backdrop-filter:blur(8px);
+      box-shadow:0 18px 60px rgba(0,0,0,.25);
+    }
+    h2 { margin:0 0 10px; font-size:1rem; }
+    p.muted { margin:0 0 12px; color:var(--muted); font-size:.78rem; }
+    label { display:block; font-size:.7rem; margin-top:9px; margin-bottom:3px; color:rgba(226,232,240,.85); }
+    input, textarea, select {
+      width:100%;
+      background:rgba(15,23,42,.2);
+      border:1px solid rgba(148,163,184,.25);
+      border-radius:10px;
+      padding:7px 9px;
+      color:#e2e8f0;
+      font-family:inherit;
+      font-size:.78rem;
+    }
+    textarea { min-height:90px; resize:vertical; }
+    button {
+      background:linear-gradient(135deg, #38bdf8, #0ea5e9);
+      border:none;
+      border-radius:999px;
+      padding:7px 16px 7px;
+      color:#0f172a;
+      font-weight:700;
+      margin-top:10px;
+      cursor:pointer;
+      font-size:.72rem;
+    }
+    button.secondary {
+      background:rgba(15,23,42,.1);
+      border:1px solid rgba(148,163,184,.19);
+      color:#e2e8f0;
+    }
+    .two { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .list {
+      border:1px solid rgba(148,163,184,.13);
+      border-radius:10px;
+      max-height:210px;
+      overflow-y:auto;
+      background:rgba(15,23,42,.35);
+      margin-top:8px;
+    }
+    .list-item {
+      padding:6px 10px;
+      border-bottom:1px solid rgba(148,163,184,.04);
+      font-size:.7rem;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .list-item:last-child { border-bottom:none; }
+    .pill { background:rgba(148,163,184,.1); border:1px solid rgba(148,163,184,.1); border-radius:999px; padding:1px 8px; font-size:.6rem; }
+    .admin-only { border:1px solid rgba(250,250,250,.1); }
+    .hidden { display:none !important; }
+    .terminal {
+      background:rgba(2,6,23,.3);
+      border:1px solid rgba(148,163,184,.12);
+      border-radius:12px;
+      overflow:hidden;
+      height:210px;
+      display:flex;
+      flex-direction:column;
+    }
+    .terminal-head { background:rgba(2,6,23,.4); padding:5px 10px; font-size:.65rem; display:flex; align-items:center; gap:5px; }
+    .dot { width:8px; height:8px; border-radius:50%; }
+    .d-red { background:#f43f5e; }
+    .d-yellow { background:#f59e0b; }
+    .d-green { background:#22c55e; }
+    .terminal-body { flex:1; overflow-y:auto; padding:6px 10px; font-family: ui-monospace, SFMono-Regular, SFMono-Regular, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size:.65rem; line-height:1.4; }
+    .terminal-input { display:flex; gap:6px; padding:7px 10px 10px; }
+    .terminal-input input { flex:1; font-family:inherit; }
+    .status { margin-top:6px; font-size:.7rem; }
+    .ok { color:var(--good); }
+    .err { color:var(--danger); }
+    @media (max-width:900px){
+      main { grid-template-columns:1fr; }
     }
   </style>
 </head>
 <body>
-
-<!-- LOGIN SCREEN -->
-<section id="login-screen">
-  <div class="login-card">
-    <h1>Infinity Login</h1>
-    <p style="font-size:.6rem; color:rgba(255,255,255,.55); margin-bottom:.2rem;">
-      Stored as <code>infinity_current_user</code> + <code>infinity_session_token</code>.
-    </p>
-    <label for="login-name">Name</label>
-    <input id="login-name" placeholder="Kris" />
-    <label for="login-email">Email (optional)</label>
-    <input id="login-email" type="email" placeholder="you@example.com" />
-    <div class="login-actions">
-      <button class="btn btn-primary" onclick="doLogin()">Sign In</button>
-      <button class="btn btn-ghost" onclick="doBypass()">Bypass</button>
+  <header>
+    <div class="logo">
+      <span>INFINITY</span>
+      <span class="badge" id="login-indicator">not logged in</span>
     </div>
-    <div id="login-msg" class="login-foot"></div>
-  </div>
-</section>
-
-<!-- APP SHELL -->
-<section id="app-shell">
-  <header class="header">
-    <div class="logo-area">
-      <div class="logo-text">INFINITY</div>
-      <div class="ai-badge">PewPi AI watcher · online</div>
-    </div>
-    <div class="user-info">
-      <div class="user-name">👤 <span id="user-display"></span></div>
-      <button class="logout-btn" onclick="handleLogout()">Logout</button>
+    <div style="display:flex; gap:8px;">
+      <input id="login-name" placeholder="login as..." style="width:140px;"/>
+      <button onclick="doLogin()">Login</button>
     </div>
   </header>
 
-  <div class="container">
-    <main class="panel">
-      <h2 class="welcome-title">Welcome back, <span id="welcome-name"></span> 🚀</h2>
-      <p class="welcome-sub">Your session is guarded. Every click earns tokens and is written to Infinity storage (local for now).</p>
+  <main>
+    <!-- LEFT: user visible -->
+    <section>
+      <div class="card">
+        <h2>Uploader / Collector</h2>
+        <p class="muted">Drop files here. We store them in browser storage. We do <b>not</b> delete previous ones.</p>
+        <input type="file" id="file-input" multiple onchange="handleFiles(this.files)">
+        <label for="free-text">or paste script / notes</label>
+        <textarea id="free-text" placeholder="paste HTML / JS / notes / user profile ..."></textarea>
+        <button onclick="saveFreeText()">Add to repository</button>
+        <div class="status" id="upload-status"></div>
 
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-label">Activity count</div>
-          <div class="stat-value" id="stat-activities">0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Infinity tokens</div>
-          <div class="stat-value" id="stat-tokens">0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Security</div>
-          <div class="stat-value" style="color:var(--success-color);">Max</div>
-        </div>
+        <h3 style="font-size:.75rem;margin-top:14px;">Stored Items (local)</h3>
+        <div class="list" id="repo-list"></div>
       </div>
 
-      <div class="activity-section">
-        <h2>Activity timeline <span style="font-size:.55rem; color:var(--text-muted);">AI shadow narrates below</span></h2>
-        <div id="activity-log" class="activity-log"></div>
-      </div>
-    </main>
-
-    <aside class="sidebar">
-      <div class="sidebar-card">
-        <h3>Infinity links</h3>
-        <button class="link-btn" onclick="openInfinityPortal()">Open deployed portal</button>
-        <button class="link-btn" onclick="recordAction('open_local_unified','Opened local unified portal (not wired)')">Local unified placeholder</button>
-        <button class="link-btn" onclick="testActivity()">Test activity</button>
-      </div>
-      <div class="sidebar-card">
-        <h3>3D core</h3>
-        <p style="font-size:.55rem; color:var(--text-muted);">This is the vector box you wanted in-page.</p>
-        <div class="cube-wrap">
-          <div class="cube">
-            <div class="cube-face face-front">∞</div>
-            <div class="cube-face face-back">AI</div>
-            <div class="cube-face face-right">Pew</div>
-            <div class="cube-face face-left">Pi</div>
-            <div class="cube-face face-top">Sec</div>
-            <div class="cube-face face-bottom">Log</div>
+      <div class="card">
+        <h2>Terminal / Builder</h2>
+        <p class="muted">Talk to your page. We’ll store each command as an event and make “generated scripts” out of it.</p>
+        <div class="terminal" id="term">
+          <div class="terminal-head">
+            <div class="dot d-red"></div>
+            <div class="dot d-yellow"></div>
+            <div class="dot d-green"></div>
+            <span style="margin-left:6px;">/infinity/agent</span>
+          </div>
+          <div class="terminal-body" id="term-body"></div>
+          <div class="terminal-input">
+            <input id="term-input" placeholder="ex: build landing page with gallery" onkeydown="if(event.key==='Enter'){runTerminal();}"/>
+            <button onclick="runTerminal()">Run</button>
           </div>
         </div>
       </div>
-      <div class="sidebar-card">
-        <h3>Raw JSON (local)</h3>
-        <p id="json-dump" style="font-size:.48rem; word-break:break-word; max-height:120px; overflow:auto; background:rgba(0,0,0,.15); padding:.3rem .2rem; border-radius:.4rem;"></p>
-      </div>
-    </aside>
-  </div>
-</section>
+    </section>
 
-<script>
-  // KEYS (match your live portal)
-  const USER_KEY = 'infinity_current_user';
-  const SESSION_KEY = 'infinity_session_token';
-  const ACTIVITY_KEY = 'infinity_activity_log';
-  const TOKEN_KEY = 'infinity_token_ledger';
+    <!-- RIGHT: admin, github, knowledge -->
+    <section>
+      <div class="card admin-only hidden" id="admin-panel">
+        <h2>Admin (Kris)</h2>
+        <p class="muted">This pane only appears when logged in as <b>Kris</b>. Everyone else can’t see it.</p>
 
-  // ----- LOGIN -----
-  function showLogin() {
-    document.getElementById('login-screen').style.display = 'flex';
-    document.getElementById('app-shell').style.display = 'none';
-  }
-  function showApp() {
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app-shell').style.display = 'block';
-  }
+        <label>GitHub Personal Access Token</label>
+        <input id="gh-token" placeholder="paste token here (we store locally)">
 
-  function doLogin() {
-    const name = document.getElementById('login-name').value.trim();
-    const email = document.getElementById('login-email').value.trim();
-    if (!name && !email) {
-      document.getElementById('login-msg').textContent = 'Enter a name or email.';
-      return;
-    }
-    const user = name || email;
-    localStorage.setItem(USER_KEY, user);
-    localStorage.setItem(SESSION_KEY, 'token-' + Date.now());
-    logActivity('user_login', 'User logged in via single-file vector build');
-    ensureTokenBucket(user);
-    renderApp();
-  }
-
-  function doBypass() {
-    const user = 'Infinity Admin';
-    localStorage.setItem(USER_KEY, user);
-    localStorage.setItem(SESSION_KEY, 'token-' + Date.now());
-    logActivity('user_login', 'Bypass login as Infinity Admin');
-    ensureTokenBucket(user);
-    renderApp();
-  }
-
-  function handleLogout() {
-    const user = localStorage.getItem(USER_KEY) || 'unknown';
-    logActivity('user_logout', 'User logged out: ' + user);
-    localStorage.removeItem(USER_KEY);
-    localStorage.removeItem(SESSION_KEY);
-    showLogin();
-  }
-
-  // ----- ACTIVITY / TOKENS -----
-  function getActivities() {
-    try {
-      return JSON.parse(localStorage.getItem(ACTIVITY_KEY) || '[]');
-    } catch (e) {
-      return [];
-    }
-  }
-
-  function logActivity(action, details) {
-    const user = localStorage.getItem(USER_KEY) || 'system';
-    const list = getActivities();
-    const payload = {
-      timestamp: new Date().toISOString(),
-      action,
-      details,
-      user
-    };
-    list.push(payload);
-    localStorage.setItem(ACTIVITY_KEY, JSON.stringify(list));
-    // token payout per action
-    payTokens(user, 1, action);
-    // stub for server
-    sendToInfinityServer(payload);
-    // re-render
-    renderActivity();
-  }
-
-  function payTokens(user, amount, reason) {
-    const ledger = getTokenLedger();
-    if (!ledger[user]) ledger[user] = 0;
-    ledger[user] += amount;
-    localStorage.setItem(TOKEN_KEY, JSON.stringify(ledger));
-    renderTokens();
-    // also log once in JSON view
-    dumpJSON();
-  }
-
-  function getTokenLedger() {
-    try {
-      return JSON.parse(localStorage.getItem(TOKEN_KEY) || '{}');
-    } catch (e) {
-      return {};
-    }
-  }
-
-  function sendToInfinityServer(entry) {
-    // placeholder — later you can:
-    // fetch('https://your-static-endpoint/collector', {method:'POST', body:JSON.stringify(entry)});
-  }
-
-  function renderActivity() {
-    const wrap = document.getElementById('activity-log');
-    const list = getActivities().slice().reverse();
-    if (!list.length) {
-      wrap.innerHTML = '<div style="font-size:.55rem; color:var(--text-muted);">No activities yet. This page will never auto-clear.</div>';
-    } else {
-      wrap.innerHTML = list.map(log => {
-        const when = new Date(log.timestamp).toLocaleString();
-        const narr = generateNarration(log.action, log.details, log.user);
-        return `
-          <div class="activity-item">
-            <div class="activity-time">⏱ ${when}</div>
-            <div class="activity-action">${getActionEmoji(log.action)} ${getActionTitle(log.action)}</div>
-            <div class="activity-details">${log.details}</div>
-            <div class="activity-narrator"><strong>AI:</strong> ${narr}</div>
+        <div class="two">
+          <div>
+            <label>Owner</label>
+            <input id="gh-owner" placeholder="your-github-name">
           </div>
-        `;
-      }).join('');
+          <div>
+            <label>Repo</label>
+            <input id="gh-repo" placeholder="your-repo">
+          </div>
+        </div>
+
+        <label>Path in repo</label>
+        <input id="gh-path" value="admin/collected/activity.json">
+
+        <label>Content to push</label>
+        <textarea id="gh-content" placeholder="click 'Build content from storage' below"></textarea>
+
+        <button onclick="buildContentFromStorage()">Build content from storage</button>
+        <button onclick="commitToGithub()">Push to GitHub</button>
+        <div class="status" id="gh-status"></div>
+
+        <p class="muted" style="margin-top:12px;">
+          To get a token: GitHub → Settings → Developer settings → Personal access tokens (classic) → New token → tick <b>repo</b> → copy.  
+          You only do this once. We keep it in localStorage on this machine.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Knowledge Base (live)</h2>
+        <p class="muted">We rebuild this from whatever is in localStorage. Nothing is deleted.</p>
+        <button class="secondary" onclick="rebuildKnowledge()">Rebuild KB</button>
+        <div class="status" id="kb-status"></div>
+        <div id="kb-preview" style="font-size:.67rem;white-space:pre-wrap;margin-top:6px;max-height:180px;overflow-y:auto;"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // ========= STORAGE KEYS (never deleting by default) =========
+    const KEY_FILES   = 'infinity_files';      // array of {name, type, content, ts}
+    const KEY_TEXT    = 'infinity_text_snips'; // array of {content, ts}
+    const KEY_EVENTS  = 'infinity_events';     // array of {cmd, ts, generated?}
+    const KEY_USER    = 'infinity_user';
+    const KEY_GH      = 'infinity_admin_token';
+
+    // ========= INIT =========
+    (function init(){
+      const u = localStorage.getItem(KEY_USER);
+      if (u) setLoginUI(u);
+      renderRepoList();
+      rebuildKnowledge();
+      // restore token into field if admin
+      if (u === 'Kris') {
+        document.getElementById('admin-panel').classList.remove('hidden');
+        const tok = localStorage.getItem(KEY_GH);
+        if (tok) document.getElementById('gh-token').value = tok;
+      }
+    })();
+
+    // ========= LOGIN =========
+    function doLogin(){
+      const name = document.getElementById('login-name').value.trim();
+      if (!name) return;
+      localStorage.setItem(KEY_USER, name);
+      setLoginUI(name);
+      if (name === 'Kris') {
+        document.getElementById('admin-panel').classList.remove('hidden');
+        const tok = localStorage.getItem(KEY_GH);
+        if (tok) document.getElementById('gh-token').value = tok;
+      } else {
+        document.getElementById('admin-panel').classList.add('hidden');
+      }
     }
-    document.getElementById('stat-activities').textContent = getActivities().length;
-    dumpJSON();
-  }
-
-  function renderTokens() {
-    const user = localStorage.getItem(USER_KEY);
-    const ledger = getTokenLedger();
-    const amt = user ? (ledger[user] || 0) : 0;
-    document.getElementById('stat-tokens').textContent = amt;
-  }
-
-  // narration helpers
-  function getActionEmoji(action) {
-    const map = {
-      user_login: '🔓',
-      user_logout: '🔒',
-      test_action: '🧪',
-      page_view: '👁',
-    };
-    return map[action] || '📌';
-  }
-  function getActionTitle(action) {
-    const map = {
-      user_login: 'User Login',
-      user_logout: 'User Logout',
-      test_action: 'Test Action',
-      page_view: 'Page View'
-    };
-    return map[action] || 'Activity';
-  }
-  function generateNarration(action, details, user) {
-    if (action === 'user_login') {
-      return `${user} entry accepted. PewPi dual-AI verified local browser identity.`;
+    function setLoginUI(name){
+      document.getElementById('login-indicator').textContent = 'signed in as '+name;
     }
-    if (action === 'user_logout') {
-      return `Session sealed for ${user}. Activity kept for receipts — no purge.`;
+
+    // ========= FILE UPLOAD =========
+    function handleFiles(fileList){
+      if (!fileList || !fileList.length) return;
+      const arr = JSON.parse(localStorage.getItem(KEY_FILES) || '[]');
+      let pending = fileList.length;
+      for (const file of fileList) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          arr.push({
+            name: file.name,
+            type: file.type || 'text/plain',
+            content: e.target.result,
+            ts: Date.now()
+          });
+          pending--;
+          if (pending === 0) {
+            localStorage.setItem(KEY_FILES, JSON.stringify(arr));
+            document.getElementById('upload-status').textContent = 'stored '+fileList.length+' file(s) — nothing was deleted.';
+            renderRepoList();
+            rebuildKnowledge();
+          }
+        };
+        reader.readAsText(file);
+      }
     }
-    if (action === 'test_action') {
-      return `Test bubble fired. This is how Infinity will narrate and award tokens in live mode.`;
+
+    // ========= FREE TEXT SAVE =========
+    function saveFreeText(){
+      const val = document.getElementById('free-text').value.trim();
+      if (!val) return;
+      const arr = JSON.parse(localStorage.getItem(KEY_TEXT) || '[]');
+      arr.push({content: val, ts: Date.now()});
+      localStorage.setItem(KEY_TEXT, JSON.stringify(arr));
+      document.getElementById('upload-status').textContent = 'text snippet saved. total: '+arr.length;
+      document.getElementById('free-text').value = '';
+      renderRepoList();
+      rebuildKnowledge();
     }
-    return `${user} performed ${action}. Details: ${details}`;
-  }
 
-  // ----- ACTION BUTTONS -----
-  function testActivity() {
-    recordAction('test_action', 'Developer fired a test activity');
-  }
-  function recordAction(action, details) {
-    logActivity(action, details);
-  }
-  function openInfinityPortal() {
-    recordAction('open_deployed_portal', 'User opened https://pewpi-infinity.github.io/infinity-portal/login.html');
-    window.open('https://pewpi-infinity.github.io/infinity-portal/login.html', '_blank');
-  }
-
-  // ----- RENDER APP -----
-  function renderApp() {
-    const user = localStorage.getItem(USER_KEY);
-    if (!user) { showLogin(); return; }
-    showApp();
-    document.getElementById('user-display').textContent = user;
-    document.getElementById('welcome-name').textContent = user;
-    renderActivity();
-    renderTokens();
-    // record current view
-    logActivity('page_view', 'Vector single-file portal viewed');
-  }
-
-  function ensureTokenBucket(user) {
-    const ledger = getTokenLedger();
-    if (!ledger[user]) {
-      ledger[user] = 3; // welcome gift
-      localStorage.setItem(TOKEN_KEY, JSON.stringify(ledger));
+    // ========= RENDER REPO =========
+    function renderRepoList(){
+      const files = JSON.parse(localStorage.getItem(KEY_FILES) || '[]');
+      const texts = JSON.parse(localStorage.getItem(KEY_TEXT)  || '[]');
+      const box = document.getElementById('repo-list');
+      let html = '';
+      files.forEach(f => {
+        html += `<div class="list-item"><span>${f.name}</span><span class="pill">file</span></div>`;
+      });
+      texts.forEach((t,i) => {
+        html += `<div class="list-item"><span>snippet-${i+1}</span><span class="pill">text</span></div>`;
+      });
+      box.innerHTML = html || '<div class="list-item">empty</div>';
     }
-  }
 
-  function dumpJSON() {
-    const dump = {
-      user: localStorage.getItem(USER_KEY),
-      session: localStorage.getItem(SESSION_KEY),
-      activity_log: getActivities(),
-      tokens: getTokenLedger()
-    };
-    document.getElementById('json-dump').textContent = JSON.stringify(dump, null, 2);
-  }
+    // ========= TERMINAL / BUILDER =========
+    function runTerminal(){
+      const input = document.getElementById('term-input');
+      const cmd = input.value.trim();
+      if (!cmd) return;
+      appendTerm('> '+cmd);
+      input.value = '';
 
-  // on boot
-  (function init() {
-    const user = localStorage.getItem(USER_KEY);
-    const token = localStorage.getItem(SESSION_KEY);
-    if (user && token) {
-      renderApp();
-    } else {
-      showLogin();
+      // store event
+      const events = JSON.parse(localStorage.getItem(KEY_EVENTS) || '[]');
+      const evt = {cmd, ts: Date.now()};
+      events.push(evt);
+      localStorage.setItem(KEY_EVENTS, JSON.stringify(events));
+
+      // FAKE "script builder" – builds HTML skeleton from prompt
+      const generated = buildHtmlFromPrompt(cmd);
+      appendTerm(generated);
+      // also store generated into text-snips
+      const texts = JSON.parse(localStorage.getItem(KEY_TEXT) || '[]');
+      texts.push({content: generated, ts: Date.now()});
+      localStorage.setItem(KEY_TEXT, JSON.stringify(texts));
+      renderRepoList();
+      rebuildKnowledge();
     }
-  })();
-</script>
+    function appendTerm(line){
+      const body = document.getElementById('term-body');
+      const div = document.createElement('div');
+      div.textContent = line;
+      body.appendChild(div);
+      body.scrollTop = body.scrollHeight;
+    }
+    function buildHtmlFromPrompt(cmd){
+      // super simple block so it doesn't stay "thin"
+      return [
+        "[builder] generated chunk:",
+        "<section class='infinity-block'>",
+        "  <h2>"+cmd.replace(/</g,'&lt;')+"</h2>",
+        "  <p>auto-generated by page agent at "+new Date().toISOString()+"</p>",
+        "  <div class='slot'>attach media / uploads / ai stream here</div>",
+        "</section>"
+      ].join("\n");
+    }
 
+    // ========= KB REBUILD =========
+    function rebuildKnowledge(){
+      const files = JSON.parse(localStorage.getItem(KEY_FILES) || '[]');
+      const texts = JSON.parse(localStorage.getItem(KEY_TEXT)  || '[]');
+      const events = JSON.parse(localStorage.getItem(KEY_EVENTS) || '[]');
+
+      const kb = {
+        summary: "local kb built at "+new Date().toISOString(),
+        fileCount: files.length,
+        textCount: texts.length,
+        eventCount: events.length,
+        files: files.map(f => ({name:f.name, ts:f.ts})),
+        lastText: texts.slice(-3),
+        lastEvents: events.slice(-3)
+      };
+      document.getElementById('kb-status').textContent = 'KB rebuilt: '+files.length+' files, '+texts.length+' text, '+events.length+' events.';
+      document.getElementById('kb-preview').textContent = JSON.stringify(kb, null, 2);
+    }
+
+    // ========= GITHUB =========
+    async function commitToGithub(){
+      const user = localStorage.getItem(KEY_USER) || '';
+      if (user !== 'Kris') {
+        document.getElementById('gh-status').textContent = '❌ only Kris can push';
+        return;
+      }
+      const token = document.getElementById('gh-token').value.trim();
+      const owner = document.getElementById('gh-owner').value.trim();
+      const repo  = document.getElementById('gh-repo').value.trim();
+      const path  = document.getElementById('gh-path').value.trim();
+      const content = document.getElementById('gh-content').value;
+
+      if (!token || !owner || !repo || !path) {
+        document.getElementById('gh-status').textContent = '❌ missing token/owner/repo/path';
+        return;
+      }
+
+      // persist token so you don’t have to paste again
+      localStorage.setItem(KEY_GH, token);
+
+      document.getElementById('gh-status').textContent = 'checking github…';
+      try {
+        const existing = await githubGetFile(token, owner, repo, path);
+        const sha = existing ? existing.sha : null;
+        document.getElementById('gh-status').textContent = existing ? 'updating file…' : 'creating file…';
+        const res = await githubPutFile(token, owner, repo, path, content, sha);
+        document.getElementById('gh-status').textContent = '✅ pushed to '+res.content.path;
+      } catch (e) {
+        document.getElementById('gh-status').textContent = '❌ '+e.message;
+      }
+    }
+
+    async function githubGetFile(token, owner, repo, path){
+      const url = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`;
+      const res = await fetch(url, {
+        headers: {
+          Authorization: `token ${token}`,
+          Accept: "application/vnd.github+json"
+        }
+      });
+      if (res.status === 404) return null;
+      if (!res.ok) throw new Error('GET '+res.status);
+      return await res.json();
+    }
+
+    async function githubPutFile(token, owner, repo, path, content, sha=null){
+      const body = {
+        message: "infinity auto commit: "+path,
+        content: btoa(unescape(encodeURIComponent(content)))
+      };
+      if (sha) body.sha = sha;
+      const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `token ${token}`,
+          Accept: "application/vnd.github+json"
+        },
+        body: JSON.stringify(body)
+      });
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error('PUT '+res.status+' '+txt);
+      }
+      return await res.json();
+    }
+
+    function buildContentFromStorage(){
+      const files = JSON.parse(localStorage.getItem(KEY_FILES) || '[]');
+      const texts = JSON.parse(localStorage.getItem(KEY_TEXT)  || '[]');
+      const events = JSON.parse(localStorage.getItem(KEY_EVENTS) || '[]');
+
+      // we append, we don't delete
+      const payload = {
+        collectedAt: new Date().toISOString(),
+        files,
+        texts,
+        events
+      };
+      document.getElementById('gh-content').value = JSON.stringify(payload, null, 2);
+      document.getElementById('gh-status').textContent = 'built content from storage, ready to push.';
+    }
+  </script>
 </body>
 </html>
