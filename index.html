@@ -1,169 +1,470 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <title>Infinity-Vectors Diagnostic</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta charset="UTF-8" />
+  <title>Infinity · PewPi Portal</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
     :root {
-      --bg: #0b1120;
-      --panel: #111827;
-      --accent: #0ea5e9;
-      --muted: #94a3b8;
+      --bg: #0a0e1a;
+      --panel: #141827;
+      --card: #1a1f35;
+      --accent: #00d4ff;
+      --accent2: #7b2cbf;
+      --text: #e9ecef;
+      --muted: #8b95a8;
       --danger: #f43f5e;
-      --ok: #22c55e;
     }
+    * { box-sizing: border-box; }
     body {
-      margin:0;
-      background: radial-gradient(circle at top, #0f172a 0%, #020617 70%);
-      color:#e2e8f0;
-      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:20px;
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #101724 0%, #060811 100%);
+      color: var(--text);
+      min-height: 100vh;
     }
-    .shell {
-      background: rgba(15, 23, 42, .6);
-      border:1px solid rgba(14,165,233,.3);
-      border-radius:18px;
-      max-width:660px;
-      width:100%;
-      box-shadow:0 20px 40px rgba(0,0,0,.25);
-      backdrop-filter: blur(10px);
-      padding:20px 22px 24px;
+    /* ---------- LOGIN ---------- */
+    #login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle, #0f172a 0%, #020617 90%);
+      padding: 20px;
     }
-    h1 {
-      margin:0 0 6px 0;
-      font-size:28px;
-      letter-spacing:.04em;
+    .login-box {
+      background: rgba(20, 24, 39, 0.9);
+      border: 1px solid rgba(0, 212, 255, 0.26);
+      border-radius: 16px;
+      max-width: 460px;
+      width: 100%;
+      padding: 28px 26px 32px;
+      box-shadow: 0 14px 50px rgba(0, 0, 0, 0.35);
     }
-    .tagline {
-      color:var(--muted);
-      margin-bottom:18px;
+    .login-title {
+      font-weight: 800;
+      font-size: 26px;
+      background: linear-gradient(135deg, var(--accent), #fff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
     }
-    .row {
-      background: rgba(2,6,23,.4);
-      border:1px solid rgba(148,163,184,.08);
-      border-radius:12px;
-      padding:12px 14px 10px;
-      margin-bottom:12px;
+    .login-sub {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 20px;
     }
-    .label {
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:.14em;
-      color:var(--muted);
-      margin-bottom:3px;
+    label {
+      display: block;
+      font-size: 12px;
+      margin-bottom: 6px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .03em;
     }
-    .val {
-      font-weight:600;
-      font-size:15px;
-      word-break:break-all;
+    .in {
+      width: 100%;
+      background: rgba(5, 7, 12, 0.35);
+      border: 1px solid rgba(233, 236, 239, 0.05);
+      border-radius: 10px;
+      padding: 10px 11px;
+      color: #fff;
+      margin-bottom: 14px;
     }
-    .pill {
-      display:inline-flex;
-      gap:5px;
-      align-items:center;
-      background:rgba(14,165,233,.12);
-      border:1px solid rgba(14,165,233,.3);
-      padding:4px 11px;
-      border-radius:999px;
-      font-size:12px;
-      margin-bottom:10px;
+    .btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: none;
+      padding: 11px;
+      border-radius: 10px;
+      color: #051426;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 4px;
     }
-    .warn {
-      background: rgba(244,63,94,.14);
-      border-color: rgba(244,63,94,.35);
-      color:#ffe4e6;
+    .err {
+      background: rgba(244, 63, 94, 0.08);
+      border: 1px solid rgba(244, 63, 94, 0.35);
+      color: #fecdd3;
+      padding: 8px 10px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      display: none;
     }
-    .ok {
-      background: rgba(34,197,94,.12);
-      border-color: rgba(34,197,94,.35);
-      color:#dcfce7;
+    /* ---------- APP ---------- */
+    #app {
+      display: none;
+      min-height: 100vh;
     }
-    #admin-box {
-      display:none;
-      margin-top:14px;
+    .topbar {
+      background: rgba(20, 24, 39, 0.95);
+      border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
-    textarea {
-      width:100%;
-      min-height:80px;
-      border-radius:10px;
-      border:1px solid rgba(148,163,184,.15);
-      background:rgba(15,23,42,.3);
-      color:#e2e8f0;
-      padding:8px 10px;
-      font-family: ui-monospace, SFMono-Regular, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      resize:vertical;
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
-    button {
-      background: linear-gradient(135deg, #0ea5e9, #38bdf8);
-      color:#0f172a;
-      border:0;
-      border-radius:10px;
-      padding:7px 14px;
-      font-weight:600;
-      cursor:pointer;
-      margin-top:7px;
+    .brand-title {
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      background: linear-gradient(135deg, var(--accent), #fff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .badge {
+      background: rgba(0, 212, 255, 0.12);
+      border: 1px solid rgba(0, 212, 255, 0.32);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .user-slot {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logout {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid rgba(244, 63, 94, 0.35);
+      color: #fecdd3;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .page {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 20px 14px 60px;
+      display: grid;
+      gap: 18px;
+    }
+    .hero {
+      background: rgba(20, 24, 39, 0.6);
+      border: 1px solid rgba(0, 212, 255, 0.2);
+      border-radius: 16px;
+      padding: 22px 22px 26px;
+    }
+    .hero h1 {
+      margin: 0 0 6px;
+      font-size: 26px;
+    }
+    .muted { color: var(--muted); }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 2fr 1.1fr;
+      gap: 16px;
+    }
+    .card {
+      background: rgba(20, 24, 39, 0.6);
+      border: 1px solid rgba(0, 212, 255, 0.12);
+      border-radius: 16px;
+      padding: 16px 16px 14px;
+    }
+    .card h2 {
+      margin-top: 0;
+      font-size: 17px;
+    }
+    .activity-log {
+      max-height: 380px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .activity-item {
+      background: rgba(1, 5, 11, 0.25);
+      border-left: 3px solid var(--accent);
+      border-radius: 10px;
+      padding: 8px 10px 10px 12px;
+    }
+    .timestamp {
+      font-size: 11px;
+      color: var(--muted);
+    }
+    /* ---------- ADMIN PANEL (inline) ---------- */
+    #admin-panel {
+      background: rgba(16, 19, 30, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.02);
+      border-left: 3px solid #f97316;
+      border-radius: 14px;
+      padding: 14px 14px 16px;
+      margin-top: 6px;
+      display: none;
+    }
+    #admin-panel h3 {
+      margin-top: 0;
+      font-size: 15px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .admin-row { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+    .admin-row input {
+      background: rgba(2,6,23,.25);
+      border: 1px solid rgba(0,212,255,.18);
+      color: #fff;
+      border-radius: 7px;
+      padding: 6px 8px;
+      min-width: 210px;
+    }
+    .small-btn {
+      background: rgba(0,212,255,.09);
+      border: 1px solid rgba(0,212,255,.35);
+      color: #fff;
+      border-radius: 7px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .pewpi-block {
+      background: rgba(5,7,12,0.2);
+      border: 1px solid rgba(123, 44, 191, 0.2);
+      border-radius: 12px;
+      padding: 10px 12px 12px;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    @media (max-width: 880px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+      .topbar { flex-wrap: wrap; gap: 10px; }
     }
   </style>
 </head>
 <body>
-  <div class="shell">
-    <div class="pill">🚩 Infinity-Vectors · diagnostic page</div>
-    <h1>Infinity-Vectors</h1>
-    <div class="tagline">Use this page to check: “Am I on the right file? Is localStorage being read?”</div>
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen">
+    <div class="login-box">
+      <div class="login-title">INFINITY / PEWPI</div>
+      <div class="login-sub">AI-to-AI encrypted Infinity Portal. Login to see your dashboard and the admin console (Kris only).</div>
+      <div class="err" id="login-error"></div>
+      <form id="login-form">
+        <label for="user">Username</label>
+        <input id="user" class="in" autocomplete="username" />
 
-    <div id="warn-block" class="row warn" style="display:none;">
-      <div class="label">Status</div>
-      <div class="val">No Infinity data in localStorage for this origin. You might be on the wrong page / wrong branch / wrong domain.</div>
+        <label for="pass">Password</label>
+        <input id="pass" type="password" class="in" autocomplete="current-password" />
+
+        <button class="btn" type="submit">Enter Infinity</button>
+      </form>
+      <div style="margin-top:12px;font-size:12px;color:var(--muted);">
+        First time? use <code>Kris</code> / <code>Infinity123!</code> to get in and see admin.
+      </div>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div id="app">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-title">INFINITY</div>
+        <div class="badge">PewPi Shadow Agent</div>
+      </div>
+      <div class="user-slot">
+        <div id="whoami">—</div>
+        <button class="logout" id="logout-btn">Logout</button>
+      </div>
     </div>
 
-    <div class="row">
-      <div class="label">Current user (localStorage: <code>infinity_current_user</code>)</div>
-      <div class="val" id="ls-user">—</div>
-    </div>
+    <div class="page">
+      <div class="hero">
+        <h1>Welcome back, <span id="welcome-name"></span> 👋</h1>
+        <p class="muted">This is the unified page. No extra HTML files. Login → Portal → Admin (if Kris) → Logs saved in localStorage.</p>
+        <div id="admin-panel">
+          <h3>⚙️ Admin Console (Kris)</h3>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:6px;">
+            This is the part you said “keep it in the script and don’t make admin.html”. It’s right here.
+          </p>
+          <div class="admin-row">
+            <input id="gh-user" placeholder="GitHub username (ex: Pewpi-infinity)" />
+            <input id="gh-repo" placeholder="Repo (ex: Infinity-Vectors)" />
+            <input id="gh-token" placeholder="Personal Access Token (saved local only)" />
+            <button class="small-btn" id="save-gh">Save GH Settings</button>
+          </div>
+          <div id="gh-status" style="font-size:11px;color:#fef08a;"></div>
+          <div class="pewpi-block" style="margin-top:8px;">
+            <strong>PewPi AI-to-AI Encryption</strong><br/>
+            Stored settings never leave this browser in this version. The AI agent (your “watcher”) can read from this block and from local activity to build scripts/files and then you paste/push to GitHub.
+          </div>
+        </div>
+      </div>
 
-    <div class="row">
-      <div class="label">Session token (localStorage: <code>infinity_session_token</code>)</div>
-      <div class="val" id="ls-token">—</div>
-    </div>
-
-    <div class="row">
-      <div class="label">GitHub admin cfg (localStorage: <code>infinity_admin_github</code>)</div>
-      <div class="val" id="ls-ghcfg">—</div>
-    </div>
-
-    <div id="admin-box" class="row">
-      <div class="label">Admin (you are Kris)</div>
-      <div class="val">You should see this box — so admin-protected UI is working on this page.</div>
-      <textarea id="gh-content" placeholder="Paste something to push later..."></textarea>
-      <button onclick="alert('this is just the diagnostic page — pushing code lives in the full portal version');">Push (demo)</button>
+      <div class="grid-2">
+        <div class="card">
+          <h2>Activity Timeline</h2>
+          <div class="activity-log" id="activity-log"></div>
+        </div>
+        <div class="card">
+          <h2>PewPi / Infinity Notes</h2>
+          <p class="muted" style="margin-bottom:7px;">
+            You said “don’t strip my copy”. So this is a permanent box in this file.
+          </p>
+          <div class="pewpi-block" id="pewpi-block">
+            Your secure Infinity Portal is protected by PewPi AI-to-AI encryption.
+            When you log in, actions are narrated and saved locally.
+            This section can be edited by admin and re-saved into the script in GitHub.
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
-    // read LS
-    const user = localStorage.getItem('infinity_current_user');
-    const token = localStorage.getItem('infinity_session_token');
-    const ghcfg = localStorage.getItem('infinity_admin_github');
-
-    // show
-    document.getElementById('ls-user').textContent = user || '⛔ not set';
-    document.getElementById('ls-token').textContent = token || '⛔ not set';
-    document.getElementById('ls-ghcfg').textContent = ghcfg || '⛔ not set';
-
-    // if nothing, show warning
-    if (!user && !token && !ghcfg) {
-      document.getElementById('warn-block').style.display = 'block';
+    // ---------- bootstrap users ----------
+    const DEFAULT_USERS = [
+      { username: "Kris", password: "Infinity123!", role: "admin" },
+      { username: "demo", password: "demo", role: "user" }
+    ];
+    if (!localStorage.getItem("infinity_users")) {
+      localStorage.setItem("infinity_users", JSON.stringify(DEFAULT_USERS));
     }
 
-    // if user is Kris -> show admin box
-    if ((user || '').toLowerCase() === 'kris') {
-      document.getElementById('admin-box').style.display = 'block';
+    // ---------- helpers ----------
+    function getUsers() {
+      try {
+        return JSON.parse(localStorage.getItem("infinity_users")) || [];
+      } catch(e) {
+        return [];
+      }
     }
+    function setCurrentUser(u) {
+      localStorage.setItem("infinity_current_user", u.username);
+      localStorage.setItem("infinity_current_role", u.role || "user");
+    }
+    function getCurrentUser() {
+      const name = localStorage.getItem("infinity_current_user");
+      const role = localStorage.getItem("infinity_current_role") || "user";
+      if (!name) return null;
+      return { username: name, role };
+    }
+
+    // ---------- activity ----------
+    function pushActivity(action, details) {
+      const list = JSON.parse(localStorage.getItem("infinity_activity_log") || "[]");
+      list.push({
+        ts: new Date().toISOString(),
+        user: (getCurrentUser() || {}).username || "system",
+        action, details
+      });
+      localStorage.setItem("infinity_activity_log", JSON.stringify(list));
+      renderActivity();
+    }
+
+    function renderActivity() {
+      const box = document.getElementById("activity-log");
+      if (!box) return;
+      const list = JSON.parse(localStorage.getItem("infinity_activity_log") || "[]").reverse();
+      if (!list.length) {
+        box.innerHTML = '<div class="muted" style="font-size:12px;">No activity yet.</div>';
+        return;
+      }
+      box.innerHTML = list.map(item => {
+        const nice = new Date(item.ts).toLocaleString();
+        return `
+          <div class="activity-item">
+            <div class="timestamp">${nice}</div>
+            <div><strong>${item.action}</strong> — ${item.details}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    // ---------- login ----------
+    const loginForm = document.getElementById("login-form");
+    const loginErr = document.getElementById("login-error");
+
+    loginForm.addEventListener("submit", function(e){
+      e.preventDefault();
+      const u = document.getElementById("user").value.trim();
+      const p = document.getElementById("pass").value;
+      const users = getUsers();
+      const found = users.find(x => x.username === u && x.password === p);
+      if (!found) {
+        loginErr.textContent = "Bad username/password (try Kris / Infinity123!).";
+        loginErr.style.display = "block";
+        return;
+      }
+      loginErr.style.display = "none";
+      setCurrentUser(found);
+      pushActivity("user_login", `User ${found.username} signed in.`);
+      showApp();
+    });
+
+    // ---------- show app ----------
+    function showApp() {
+      const cu = getCurrentUser();
+      if (!cu) {
+        document.getElementById("login-screen").style.display = "flex";
+        document.getElementById("app").style.display = "none";
+        return;
+      }
+      document.getElementById("login-screen").style.display = "none";
+      document.getElementById("app").style.display = "block";
+      document.getElementById("welcome-name").textContent = cu.username;
+      document.getElementById("whoami").textContent = "👤 " + cu.username;
+      renderActivity();
+      // admin show/hide
+      if (cu.username === "Kris") {
+        document.getElementById("admin-panel").style.display = "block";
+        loadGHSettings();
+      } else {
+        document.getElementById("admin-panel").style.display = "none";
+      }
+    }
+
+    // ---------- logout ----------
+    document.getElementById("logout-btn").addEventListener("click", function(){
+      const cu = getCurrentUser();
+      pushActivity("user_logout", `User ${(cu && cu.username) || "unknown"} logged out.`);
+      localStorage.removeItem("infinity_current_user");
+      localStorage.removeItem("infinity_current_role");
+      document.getElementById("app").style.display = "none";
+      document.getElementById("login-screen").style.display = "flex";
+    });
+
+    // ---------- GH settings (admin) ----------
+    function loadGHSettings() {
+      const data = JSON.parse(localStorage.getItem("infinity_gh_settings") || "null");
+      if (!data) return;
+      document.getElementById("gh-user").value = data.user || "";
+      document.getElementById("gh-repo").value = data.repo || "";
+      document.getElementById("gh-token").value = data.token || "";
+      document.getElementById("gh-status").textContent = "Loaded admin GitHub settings from localStorage.";
+    }
+
+    document.getElementById("save-gh").addEventListener("click", function(){
+      const obj = {
+        user: document.getElementById("gh-user").value.trim(),
+        repo: document.getElementById("gh-repo").value.trim(),
+        token: document.getElementById("gh-token").value.trim()
+      };
+      localStorage.setItem("infinity_gh_settings", JSON.stringify(obj));
+      document.getElementById("gh-status").textContent = "Saved locally. Actual push to GitHub needs backend, but data is here.";
+      pushActivity("admin_update", "Admin saved GitHub settings.");
+    });
+
+    // ---------- auto login if saved ----------
+    (function(){
+      const cu = getCurrentUser();
+      if (cu) {
+        showApp();
+      } else {
+        // still render activity list on login screen? no.
+      }
+    })();
   </script>
 </body>
 </html>
