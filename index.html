@@ -31,7 +31,6 @@
       background: rgba(3,7,18,.6);
       border-bottom: 1px solid rgba(148,163,184,.15);
       backdrop-filter: blur(4px);
-      gap: .75rem;
     }
     header h1 {
       margin: 0;
@@ -42,22 +41,10 @@
       font-size: .6rem;
       opacity: .6;
     }
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: .5rem;
-    }
-    .token-pill {
-      background: rgba(56,189,248,.15);
-      border: 1px solid rgba(56,189,248,.5);
-      border-radius: 9999px;
-      padding: .2rem .55rem;
-      font-size: .55rem;
-    }
     main {
       flex: 1;
       display: grid;
-      grid-template-columns: minmax(260px, 380px) minmax(240px, 1fr) minmax(220px, 280px);
+      grid-template-columns: minmax(260px, 380px) minmax(240px, 1fr);
       gap: 1rem;
       padding: 1rem;
     }
@@ -169,35 +156,6 @@
       100% { transform: rotateX(-20deg) rotateY(360deg); }
     }
 
-    /* live state panel */
-    .state-panel {
-      padding: .6rem;
-      display: flex;
-      flex-direction: column;
-      gap: .4rem;
-      font-size: .55rem;
-    }
-    .state-panel h3 {
-      margin: 0;
-      font-size: .62rem;
-    }
-    .state-panel pre {
-      background: rgba(2,6,23,.35);
-      border: 1px solid rgba(148,163,184,.08);
-      border-radius: .4rem;
-      padding: .35rem;
-      max-height: 260px;
-      overflow: auto;
-      white-space: pre-wrap;
-      word-break: break-word;
-      font-family: ui-monospace, SFMono-Regular, SFMono-Regular, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    }
-
-    @media (max-width: 980px) {
-      main {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
     @media (max-width: 740px) {
       main {
         grid-template-columns: 1fr;
@@ -211,10 +169,7 @@
       <h1>Infinity Portal</h1>
       <small>PewPi AI-to-AI local login</small>
     </div>
-    <div class="header-right">
-      <div id="tokenDisplay" class="token-pill">Tokens: 0</div>
-      <div id="userDisplay" style="font-size:.6rem; opacity:.8;">Guest (not signed in)</div>
-    </div>
+    <div id="userDisplay" style="font-size:.6rem; opacity:.8;">Guest (not signed in)</div>
   </header>
 
   <main>
@@ -233,8 +188,9 @@
       <p id="loginStatus" style="font-size:.55rem; color:var(--muted); margin-top:.4rem;"></p>
     </section>
 
-    <!-- CENTER: PORTAL -->
+    <!-- RIGHT: AFTER LOGIN -->
     <section class="card ai-card" id="portalPanel" style="display:none;">
+      <!-- 3D BOX / VECTORS FEEL -->
       <div class="cube-shell" title="Infinity Vector Core">
         <div class="cube">
           <div class="cube-face">∞</div>
@@ -247,7 +203,9 @@
       </div>
 
       <h2>Infinity Apps</h2>
-      <p style="font-size:.55rem; color:var(--muted); margin-top:-.3rem;">Portal, marketplace, radio, vectors — tied to this account.</p>
+      <p style="font-size:.55rem; color:var(--muted); margin-top:-.3rem;">
+        Portal, marketplace, radio, vectors — all hang off your login.
+      </p>
       <div style="display:flex; gap:.4rem; flex-wrap:wrap; margin-bottom:.5rem;">
         <button class="muted-link" onclick="logQuick('open-portal')">Portal</button>
         <button class="muted-link" onclick="logQuick('open-marketplace')">Marketplace</button>
@@ -257,13 +215,6 @@
 
       <h3 style="font-size:.62rem; margin-bottom:.3rem;">PewPi Activity</h3>
       <div id="activityBox" class="history">No activity yet.</div>
-    </section>
-
-    <!-- RIGHT: LIVE STATE -->
-    <section class="card state-panel">
-      <h3>Live Script / State</h3>
-      <p style="color:var(--muted);">This is the activity and tokens as JSON, written while you use the app.</p>
-      <pre id="stateDump">{}</pre>
     </section>
   </main>
 
@@ -294,27 +245,6 @@
       window.infinityAuth = api;
     })();
 
-    // ===== infinity-tokens.js =====
-    (function () {
-      const STORAGE_KEY = "infinityTokens";
-      const api = {
-        get() {
-          const raw = localStorage.getItem(STORAGE_KEY);
-          return raw ? Number(raw) : 0;
-        },
-        set(v) {
-          localStorage.setItem(STORAGE_KEY, String(v));
-        },
-        add(n) {
-          const cur = this.get();
-          const next = cur + n;
-          this.set(next);
-          return next;
-        }
-      };
-      window.infinityTokens = api;
-    })();
-
     // ===== infinity-logger.js =====
     (function () {
       const STORAGE_KEY = "infinityActivity";
@@ -324,26 +254,16 @@
           const user = window.infinityAuth ? window.infinityAuth.getUser() : null;
           const raw = localStorage.getItem(STORAGE_KEY);
           const list = raw ? JSON.parse(raw) : [];
-          const newEntry = {
+          list.unshift({
             ts: new Date().toISOString(),
             user: user ? (user.name || user.email || "Infinity user") : "Guest",
             path: location.pathname + location.hash,
             action,
             extra: extra || null
-          };
-          list.unshift(newEntry);
+          });
           localStorage.setItem(STORAGE_KEY, JSON.stringify(list.slice(0, MAX_ENTRIES)));
-
-          // earn a token every action
-          const tokens = window.infinityTokens.add(1);
-
-          // write-through to page
-          updateStateDump(list.slice(0, 40), tokens);
-
-          // also write as <script> in DOM so it's literally on the page
-          writeActivityScriptTag(list.slice(0, 200));
-
-          return newEntry;
+          // optional: sync to central hub
+          // syncActivityToHub(list[0]);
         },
         getAll() {
           const raw = localStorage.getItem(STORAGE_KEY);
@@ -353,42 +273,30 @@
       window.infinityLogger = api;
     })();
 
-    function writeActivityScriptTag(list) {
-      let el = document.getElementById("liveActivityScript");
-      if (!el) {
-        el = document.createElement("script");
-        el.id = "liveActivityScript";
-        document.body.appendChild(el);
-      }
-      el.textContent = "window.__INFINITY_ACTIVITY__ = " + JSON.stringify(list, null, 2) + ";";
+    // ===== optional remote sync (stub) =====
+    function syncActivityToHub(entry) {
+      // put your static endpoint / worker URL here
+      // fetch("https://your-hub.example.com/infinity-log", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify(entry)
+      // });
     }
 
-    function updateStateDump(activity, tokens) {
-      const dump = document.getElementById("stateDump");
-      const payload = {
-        tokens: tokens,
-        activity: activity
-      };
-      dump.textContent = JSON.stringify(payload, null, 2);
-      const tokenDisplay = document.getElementById("tokenDisplay");
-      if (tokenDisplay) tokenDisplay.textContent = "Tokens: " + tokens;
-    }
-
+    // ===== page wiring =====
     function renderActivity() {
       const box = document.getElementById("activityBox");
       const list = window.infinityLogger.getAll();
-      const tokens = window.infinityTokens.get();
       box.innerHTML = "";
       if (!list.length) {
         box.textContent = "No activity yet.";
-      } else {
-        list.slice(0, 40).forEach(item => {
-          const p = document.createElement("p");
-          p.textContent = `${item.ts} — ${item.user}: ${item.action}`;
-          box.appendChild(p);
-        });
+        return;
       }
-      updateStateDump(list.slice(0, 40), tokens);
+      list.slice(0, 40).forEach(item => {
+        const p = document.createElement("p");
+        p.textContent = `${item.ts} — ${item.user}: ${item.action}`;
+        box.appendChild(p);
+      });
     }
 
     function doInfinityLogin() {
@@ -426,23 +334,12 @@
     // restore session on load
     document.addEventListener("DOMContentLoaded", () => {
       const user = window.infinityAuth.getUser();
-      const tokens = window.infinityTokens.get();
-      const activity = window.infinityLogger.getAll();
-
-      // show tokens even before login
-      updateStateDump(activity.slice(0, 40), tokens);
-
       if (user) {
+        // put saved user back into inputs so you can see it's remembered
         if (user.name) document.getElementById("name").value = user.name;
         if (user.email) document.getElementById("email").value = user.email;
         revealPortal();
-      } else {
-        // still render activity panel even if not logged
-        renderActivity();
       }
-
-      // also write script tag on load
-      writeActivityScriptTag(activity);
     });
   </script>
 </body>
