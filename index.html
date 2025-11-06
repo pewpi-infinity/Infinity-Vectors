@@ -2,528 +2,667 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>PEWPI · INFINITY</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <title>PewPi · Infinity Portal</title>
+  <meta name="color-scheme" content="dark"/>
   <style>
     :root {
-      --bg: radial-gradient(circle at top, #0f172a 0%, #020617 55%, #020617 100%);
-      --panel: rgba(2, 6, 23, 0.35);
-      --card: rgba(10, 18, 34, 0.85);
-      --line: rgba(255,255,255,0.06);
-      --blue: #38bdf8;
-      --accent: #0ea5e9;
-      --text: #e2e8f0;
-      --muted: #94a3b8;
+      --bg: radial-gradient(circle at top, #030816 0%, #01030a 45%, #000 100%);
+      --panel: rgba(2, 11, 25, 0.75);
+      --panel-solid: #020c18;
+      --line: #12b5ff;
+      --line-soft: rgba(18, 181, 255, 0.3);
+      --accent: #5f6fff;
+      --accent2: #14b8a6;
+      --red: #b91c1c;
+      --danger: #f43f5e;
+      --success: #22c55e;
       --radius-lg: 18px;
       --radius-md: 14px;
-      --shadow: 0 18px 50px rgba(0,0,0,.35);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --text: #dbeafe;
+      --muted: #94a3b8;
+      --warn: #f97316;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, sans-serif;
     }
     * { box-sizing:border-box; }
     body {
-      margin:0; min-height:100vh; background:var(--bg);
-      background-attachment: fixed;
+      margin:0;
+      background:var(--bg);
+      min-height:100vh;
       color:var(--text);
     }
     a { color:inherit; }
+    .hidden { display:none !important; }
 
-    /* LOGIN VIEW */
-    .auth-shell {
+    /* LOGIN SCREEN */
+    #loginScreen {
       min-height:100vh;
       display:flex;
       flex-direction:column;
-      align-items:center;
       justify-content:center;
-      padding:18px 14px 48px;
+      align-items:center;
+      padding:35px 12px 45px;
+      gap:18px;
     }
-    .auth-card {
-      width:min(460px, 100%);
-      background:rgba(2,6,23,.7);
-      border:1px solid rgba(148,163,184,.12);
-      border-radius:22px;
-      box-shadow:var(--shadow);
-      padding:20px 20px 24px;
-      backdrop-filter: blur(14px);
+    .login-card {
+      background:radial-gradient(circle, rgba(4, 21, 43, 0.7), rgba(1, 3, 7, 0.6));
+      backdrop-filter:blur(14px);
+      border:1px solid rgba(18, 181, 255, 0.1);
+      border-top:1px solid rgba(18, 181, 255, 0.3);
+      max-width:460px;
+      width:100%;
+      border-radius:20px;
+      padding:22px 19px 26px;
+      box-shadow:0 18px 48px rgba(0,0,0,0.28);
     }
-    .hero-title {
-      text-align:center;
-      font-size:32px;
+    .brandTitle {
+      font-size:36px;
       font-weight:800;
-      letter-spacing:1px;
-      margin-bottom:4px;
-      background:linear-gradient(90deg, #38bdf8, #0ea5e9);
+      letter-spacing:.24em;
+      text-align:center;
+      background:linear-gradient(120deg, #23b0ff, #8a7cff 60%, #ffffff);
       -webkit-background-clip:text;
-      color:transparent;
+      -webkit-text-fill-color:transparent;
+      margin-bottom:4px;
     }
-    .hero-sub {
+    .subtitle-center {
       text-align:center;
       color:var(--muted);
-      margin-bottom:20px;
-      font-size:13px;
-      letter-spacing:.14px;
+      font-size:14px;
+      margin-bottom:18px;
     }
-    .pill {
+    .badge-inline {
       display:inline-flex;
       align-items:center;
-      gap:6px;
-      background:rgba(3,105,161,.15);
-      border:1px solid rgba(56,189,248,0.3);
-      color:#e2e8f0;
-      padding:6px 14px;
+      gap:8px;
+      background:rgba(1, 110, 146, 0.32);
+      border:1px solid rgba(2, 219, 255, 0.28);
+      color:#e2f3ff;
       border-radius:999px;
-      font-size:12px;
-      margin-bottom:12px;
+      padding:6px 13px 6px 10px;
+      font-weight:600;
+      font-size:13px;
+      margin:0 auto 12px;
     }
-    label { display:block; font-size:13px; margin-bottom:5px; }
-    .input {
-      width:100%;
-      background:rgba(15,23,42,.4);
-      border:1px solid rgba(255,255,255,.03);
-      border-radius:14px;
-      padding:11px 12px;
+    .lock-emoji { font-size:16px; }
+    .form-group {
+      display:flex;
+      flex-direction:column;
+      gap:5px;
+      margin-bottom:11px;
+    }
+    label {
+      font-size:13px;
+      color:var(--muted);
+      font-weight:500;
+    }
+    input {
+      background:rgba(0,0,0,0.38);
+      border:1px solid rgba(13, 148, 136, 0.25);
+      border-radius:12px;
+      padding:10px 12px;
+      font-size:14.5px;
       color:var(--text);
-      font-size:15px;
       outline:none;
     }
-    .input:focus {
-      border-color:rgba(56,189,248,.7);
-      background:rgba(15,23,42,.9);
+    input:focus {
+      border-color:rgba(18, 181, 255, 0.8);
+      box-shadow:0 0 0 1px rgba(18, 181, 255, 0.4);
     }
     .btn-primary {
       width:100%;
+      background:linear-gradient(115deg, #47c3ff 0%, #6062ff 70%);
       border:none;
-      border-radius:14px;
-      padding:12px 14px;
-      background:linear-gradient(90deg, #0ea5e9, #38bdf8);
       color:#fff;
       font-weight:700;
+      border-radius:999px;
+      padding:11px 18px;
       font-size:15px;
       cursor:pointer;
-      margin-top:12px;
-      box-shadow:0 12px 35px rgba(56,189,248,.28);
+      margin-top:10px;
+      box-shadow:0 16px 40px rgba(96,98,255,0.35);
     }
-    .small {
+    .btn-primary:active { opacity:.85; }
+    .tiny-link {
+      margin-top:12px;
       text-align:center;
-      margin-top:14px;
-      font-size:13px;
+      font-size:13.5px;
       color:var(--muted);
     }
-
-    /* PORTAL VIEW */
-    .app-shell {
-      min-height:100vh;
-      display:none;
+    .tiny-link button {
+      background:none;
+      border:none;
+      color:#5fd4ff;
+      font-weight:600;
+      cursor:pointer;
     }
-    header.topbar {
+
+    /* DASHBOARD LAYOUT */
+    #dashboard {
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+    }
+    .topbar {
       display:flex;
       align-items:center;
       justify-content:space-between;
-      padding:14px 16px 10px;
-      background:rgba(2,6,23,0.35);
-      backdrop-filter:blur(16px);
-      border-bottom:1px solid rgba(148,163,184,.05);
+      padding:14px 14px 13px;
+      background:rgba(3, 6, 18, 0.65);
+      border-bottom:1px solid rgba(16, 185, 232, 0.1);
+      backdrop-filter:blur(18px);
       position:sticky;
       top:0;
-      z-index:40;
+      z-index:18;
     }
-    .brand-title {
-      font-weight:800;
-      letter-spacing:.2px;
-      font-size:20px;
-    }
-    .badge-small {
-      background:rgba(59,130,246,.16);
-      border:1px solid rgba(59,130,246,.22);
-      padding:3px 10px;
-      border-radius:13px;
-      font-size:11px;
-      color:var(--text);
-      margin-top:4px;
-      display:inline-block;
-    }
-    .top-actions {
+    .top-left {
       display:flex;
-      gap:10px;
+      align-items:center;
+      gap:15px;
     }
-    .btn {
-      background:rgba(148,163,184,.08);
-      border:1px solid rgba(148,163,184,.06);
-      border-radius:13px;
-      padding:7px 14px;
-      color:var(--text);
-      font-weight:600;
-      cursor:pointer;
-      font-size:13px;
-    }
-    .btn-danger {
-      background:rgba(248,113,113,0.08);
-      border-color:rgba(248,113,113,0.3);
-    }
-    main.portal-body {
-      padding:16px;
-      max-width:1100px;
-      margin:0 auto 50px;
-    }
-    .welcome-card {
-      background:rgba(2,6,23,.35);
-      border:1px solid rgba(148,163,184,.04);
-      border-radius:20px;
-      padding:18px 18px 22px;
-      margin-bottom:18px;
-      box-shadow:var(--shadow);
-    }
-    .welcome-title {
-      font-size:24px;
+    .logo-main {
       font-weight:700;
+      letter-spacing:.22em;
+      font-size:22px;
+      background:linear-gradient(112deg, #23b0ff 0%, #b1c7ff 82%);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+    .agent-pill {
+      background:rgba(3, 105, 161, 0.12);
+      border:1px solid rgba(45, 212, 191, 0.33);
+      border-radius:999px;
+      padding:4px 10px 4px 9px;
+      font-size:12px;
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+    .user-controls {
       display:flex;
       gap:8px;
       align-items:center;
-      flex-wrap:wrap;
     }
-    .stats-row {
+    .user-name {
       display:flex;
-      gap:14px;
-      margin-top:16px;
-      flex-wrap:wrap;
+      gap:6px;
+      align-items:center;
+      font-weight:600;
+      color:#e2e8f0;
     }
-    .stat-card {
-      flex:0 0 130px;
-      background:rgba(15,23,42,.5);
-      border:1px solid rgba(148,163,184,.03);
-      border-radius:14px;
-      padding:12px;
+    .btn-small {
+      background:rgba(248, 113, 113, 0.18);
+      border:1px solid rgba(248, 113, 113, 0.28);
+      color:#fff;
+      border-radius:12px;
+      padding:6px 14px 5px;
+      font-size:13px;
+      cursor:pointer;
     }
-    .stat-label {
-      font-size:12px;
-      color:var(--muted);
-      margin-bottom:3px;
+    .btn-admin {
+      background:rgba(15, 118, 178, 0.16);
+      border:1px solid rgba(56, 189, 248, 0.3);
     }
-    .stat-value {
-      font-size:25px;
+
+    .content-wrap {
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+      padding:12px 14px 65px;
+    }
+
+    .hero-card {
+      background:rgba(1, 11, 21, 0.68);
+      border:1px solid rgba(18, 181, 255, 0.09);
+      border-radius:20px;
+      padding:18px 16px 21px;
+      box-shadow:0 16px 46px rgba(0,0,0,.2);
+    }
+    .hero-title {
+      font-size:22px;
       font-weight:700;
-      color:#38bdf8;
+      margin-bottom:4px;
     }
-    .panel {
-      background:rgba(15,23,42,.54);
-      border:1px solid rgba(148,163,184,.05);
-      border-radius:16px;
-      padding:14px;
+    .hero-sub {
+      color:var(--muted);
+      font-size:13.5px;
       margin-bottom:14px;
     }
-    .panel h3 {
-      margin-top:0;
-      font-size:16px;
+    .hero-stats {
+      display:flex;
+      gap:14px;
+      flex-wrap:wrap;
     }
-    .panel small {
+    .stat-box {
+      background:rgba(0,0,0,0.14);
+      border:1px solid rgba(18, 181, 255, 0.07);
+      border-left:2px solid rgba(82, 124, 254, 0.9);
+      border-radius:15px;
+      padding:10px 12px 9px;
+      flex:1 1 120px;
+      min-width:124px;
+    }
+    .stat-label { font-size:12px; color:var(--muted); margin-bottom:4px; }
+    .stat-value { font-size:25px; font-weight:700; letter-spacing:.03em; }
+    .stat-sub { font-size:12px; color:var(--muted); }
+
+    .three-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(255px,1fr));
+      gap:15px;
+    }
+    .portal-card {
+      background:rgba(2, 13, 26, 0.42);
+      border:1px solid rgba(148, 163, 184, 0.06);
+      border-left:2px solid rgba(110, 231, 183, 0.8);
+      border-radius:18px;
+      padding:16px 14px 16px;
+    }
+    .portal-card h3 {
+      margin:0 0 5px;
+      font-size:16px;
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    .portal-card p {
+      margin:0;
+      font-size:13px;
       color:var(--muted);
+    }
+    .portal-card button {
+      margin-top:10px;
+      background:rgba(34, 211, 238, 0.1);
+      border:1px solid rgba(34, 211, 238, 0.44);
+      color:white;
+      border-radius:999px;
+      padding:6px 12px 5px;
+      font-size:13px;
+      cursor:pointer;
+    }
+
+    /* TIMELINE */
+    .timeline-card {
+      background:rgba(1, 8, 16, .5);
+      border:1px solid rgba(148, 163, 184, 0.03);
+      border-radius:20px;
+      padding:16px 14px 16px;
+    }
+    .timeline-head {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:10px;
+    }
+    .timeline-title {
+      font-size:17px;
+      font-weight:700;
+    }
+    .clear-btn {
+      background:rgba(248, 113, 113, 0.1);
+      color:#fca5a5;
+      border:1px solid rgba(248, 113, 113, 0.3);
+      border-radius:10px;
+      padding:4px 10px 3px;
+      font-size:12px;
+      cursor:pointer;
+    }
+    .activity-list {
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      max-height:310px;
+      overflow-y:auto;
+    }
+    .activity-item {
+      background:rgba(2, 16, 30, 0.55);
+      border:1px solid rgba(18, 181, 255, 0.02);
+      border-radius:16px;
+      padding:8px 10px 7px;
+      display:flex;
+      gap:10px;
+    }
+    .activity-bar {
+      width:4px;
+      border-radius:999px;
+      background:linear-gradient(180deg, #12b5ff 0%, rgba(18,181,255,0) 100%);
+    }
+    .activity-body {
+      flex:1;
+    }
+    .activity-title {
+      font-weight:600;
+      font-size:14px;
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    .activity-meta {
+      font-size:11.5px;
+      color:var(--muted);
+      margin-top:2px;
+    }
+
+    /* ADMIN PANEL */
+    #adminPanel {
+      background:rgba(3, 13, 22, 0.62);
+      border:1px solid rgba(59, 130, 246, 0.16);
+      border-radius:16px;
+      padding:14px 14px 14px;
+      margin-top:6px;
+    }
+    #adminPanel h3 {
+      margin:0 0 10px;
+      font-size:15px;
     }
     .admin-grid {
       display:grid;
-      grid-template-columns:repeat(auto-fit, minmax(210px, 1fr));
-      gap:12px;
-      margin-top:12px;
-    }
-    .admin-input {
-      background:rgba(2,6,23,.35);
-      border:1px solid rgba(148,163,184,.04);
-      border-radius:12px;
-      padding:9px 10px;
-      color:var(--text);
-      width:100%;
-    }
-    .push-btn {
-      background:linear-gradient(90deg, #0f766e, #14b8a6);
-      border:none;
-      border-radius:14px;
-      padding:10px 12px;
-      color:#fff;
-      font-weight:700;
-      cursor:pointer;
-      margin-top:12px;
-      width:100%;
-    }
-    .push-status {
-      margin-top:10px;
-      font-size:13px;
-    }
-    .quick-actions {
-      display:flex;
-      flex-wrap:wrap;
+      grid-template-columns:1fr;
       gap:10px;
-      margin-top:10px;
     }
-    .qa-btn {
-      background:rgba(148,163,184,.04);
-      border:1px solid rgba(148,163,184,.05);
+    .admin-box {
+      background:rgba(1, 5, 12, 0.3);
+      border:1px solid rgba(15, 118, 178, 0.2);
       border-radius:12px;
-      padding:10px 14px;
+      padding:10px 10px 12px;
+    }
+    textarea {
+      width:100%;
+      background:rgba(0,0,0,0.22);
+      border:1px solid rgba(59, 130, 246, 0.35);
+      border-radius:10px;
+      min-height:90px;
+      padding:7px 8px;
+      color:inherit;
+    }
+    .btn-inline {
+      margin-top:8px;
+      background:rgba(59, 130, 246, 0.18);
+      border:1px solid rgba(59, 130, 246, 0.42);
+      color:#fff;
+      border-radius:7px;
+      padding:5px 11px 4px;
       font-size:13px;
       cursor:pointer;
     }
-    @media (max-width:600px) {
-      header.topbar { flex-wrap:wrap; gap:10px; }
-      .welcome-title { flex-wrap:wrap; }
+    .status-line {
+      font-size:12px;
+      margin-top:5px;
+    }
+
+    @media (min-width:930px) {
+      .content-wrap {
+        max-width:1180px;
+        margin:0 auto;
+      }
+      .admin-grid {
+        grid-template-columns:2fr 1fr;
+      }
     }
   </style>
 </head>
 <body>
 
 <!-- LOGIN SCREEN -->
-<div id="loginView" class="auth-shell">
-  <div class="auth-card">
-    <div class="pill">🔐 PewPi Ai-to-AI Encryption Active</div>
-    <div class="hero-title">INFINITY</div>
-    <div class="hero-sub">SECURE PORTAL ACCESS</div>
-
-    <label for="user">Username</label>
-    <input id="user" class="input" placeholder="Enter your username" autocomplete="off" />
-
-    <label for="pass" style="margin-top:10px;">Password</label>
-    <input id="pass" class="input" type="password" placeholder="Enter your password" />
-
-    <button id="loginBtn" class="btn-primary">SIGN IN SECURELY</button>
-    <div class="small">(for now: username <b>Kris</b>, password <b>Kris</b>)</div>
-  </div>
-</div>
-
-<!-- PORTAL / DASHBOARD -->
-<div id="appView" class="app-shell">
-  <header class="topbar">
-    <div>
-      <div class="brand-title">PEWPI · INFINITY</div>
-      <div class="badge-small" id="adminBadge" style="display:none;">Admin mode</div>
+<section id="loginScreen">
+  <div class="login-card" id="loginCard">
+    <div class="brandTitle">INFINITY</div>
+    <div class="subtitle-center">SECURE PORTAL ACCESS</div>
+    <div class="badge-inline"><span class="lock-emoji">🔐</span> PewPi AI-to-AI Encryption Active</div>
+    <div class="form-group">
+      <label for="loginUser">Username</label>
+      <input id="loginUser" placeholder="Enter your username" autocomplete="username">
     </div>
-    <div class="top-actions">
-      <button class="btn" id="adminToggleBtn">Admin</button>
-      <button class="btn-danger" id="logoutBtn">Logout</button>
+    <div class="form-group">
+      <label for="loginPass">Password</label>
+      <input id="loginPass" type="password" placeholder="Enter your password" autocomplete="current-password">
+    </div>
+    <button class="btn-primary" onclick="login()">SIGN IN SECURELY</button>
+    <div class="tiny-link">Don't have an account? <button onclick="showCreate()">Create one</button></div>
+    <div id="loginMsg" class="tiny-link" style="color:#fca5a5;"></div>
+  </div>
+
+  <!-- CREATE ACCOUNT inline -->
+  <div class="login-card hidden" id="createCard">
+    <div class="brandTitle" style="font-size:30px;">Create Account</div>
+    <div class="subtitle-center">Add phone now — we can verify later when backend is ready.</div>
+    <div class="form-group">
+      <label for="newUser">Username</label>
+      <input id="newUser" placeholder="Choose a username">
+    </div>
+    <div class="form-group">
+      <label for="newPass">Password</label>
+      <input id="newPass" type="password" placeholder="Choose a password">
+    </div>
+    <div class="form-group">
+      <label for="newPhone">Phone (optional)</label>
+      <input id="newPhone" placeholder="+1 555 123 4567">
+    </div>
+    <button class="btn-primary" onclick="createAccount()">CREATE &amp; SIGN IN</button>
+    <div class="tiny-link"><button onclick="showLogin()">Back to login</button></div>
+    <div id="createMsg" class="tiny-link" style="color:#fbbf24;"></div>
+  </div>
+</section>
+
+<!-- DASHBOARD -->
+<section id="dashboard" class="hidden">
+  <header class="topbar">
+    <div class="top-left">
+      <div class="logo-main">PEWPI · INFINITY</div>
+      <div class="agent-pill"><span>🤖</span> AI Shadow Agent Active</div>
+    </div>
+    <div class="user-controls">
+      <div class="user-name" id="userLabel"><span>👤</span> <span id="userNameLbl">User</span></div>
+      <button class="btn-small btn-admin" id="adminBtn" onclick="toggleAdmin()">Admin</button>
+      <button class="btn-small" onclick="logout()">Logout</button>
     </div>
   </header>
 
-  <main class="portal-body">
-    <div class="welcome-card">
-      <div class="welcome-title">
-        <span>Welcome back, <span id="who">Kris</span></span>
-        <span>🔐🔑</span>
-      </div>
-      <p style="color:var(--muted);margin-top:3px;">Your Infinity / PewPi session is protected.</p>
-      <div class="stats-row">
-        <div class="stat-card">
+  <main class="content-wrap">
+    <div class="hero-card">
+      <div class="hero-title" id="welcomeTitle">Welcome back!</div>
+      <div class="hero-sub">Your Infinity / PewPi session is protected.</div>
+      <div class="hero-stats">
+        <div class="stat-box">
           <div class="stat-label">TOTAL ACTIVITIES</div>
-          <div class="stat-value" id="activityCount">0</div>
+          <div class="stat-value" id="actCount">0</div>
+          <div class="stat-sub">Shadow agent is watching (in a good way).</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-label">INFINITY TOKENS</div>
+        <div class="stat-box">
+          <div class="stat-label">TOKEN BALANCE</div>
           <div class="stat-value" id="tokenCount">0</div>
+          <div class="stat-sub">Earn tokens by doing things.</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-label">LAST COMMIT</div>
-          <div id="lastCommit" style="font-size:12px;color:var(--muted);word-break:break-all;">—</div>
+        <div class="stat-box">
+          <div class="stat-label">SESSION STATUS</div>
+          <div class="stat-value" style="font-size:20px" id="sessionStatus">Active</div>
+          <div class="stat-sub">Security level: <b id="secLevel">Maximum</b></div>
         </div>
       </div>
     </div>
 
-    <div class="panel">
-      <h3>Quick Actions (user)</h3>
-      <small>Tap these and watch activities / tokens go up.</small>
-      <div class="quick-actions">
-        <button class="qa-btn" onclick="recordActivity('open:chat')">Open Chat</button>
-        <button class="qa-btn" onclick="recordActivity('open:apps')">Open App Dock</button>
-        <button class="qa-btn" onclick="recordActivity('upload:file')">Upload / Builder</button>
-        <button class="qa-btn" onclick="recordActivity('view:news')">View Feed</button>
+    <div class="three-grid">
+      <div class="portal-card">
+        <h3>🔐 PewPi Security</h3>
+        <p>Learn about your AI-to-AI encryption protection.</p>
+        <button onclick="logAction('PewPi Security viewed','Security docs opened')">Open</button>
+      </div>
+      <div class="portal-card">
+        <h3>🌐 Infinity Portal</h3>
+        <p>Access the main unified portal components.</p>
+        <button onclick="logAction('Infinity Portal accessed','Portal card clicked')">Launch</button>
+      </div>
+      <div class="portal-card">
+        <h3>⚡ Test Activity</h3>
+        <p>Generate a test activity log entry.</p>
+        <button onclick="logAction('Test activity trigger','Manual test from dashboard')">Trigger</button>
       </div>
     </div>
 
-    <div class="panel" id="adminPanel" style="display:none;">
-      <h3>Infinity Admin</h3>
-      <small>Paste your GitHub token & repo info. Then “Push current page → GitHub”.</small>
+    <div class="timeline-card">
+      <div class="timeline-head">
+        <div class="timeline-title">Activity Timeline <span style="font-size:12px;color:var(--muted);">· Live narration</span></div>
+        <button class="clear-btn" onclick="clearHistory()">Clear History</button>
+      </div>
+      <div class="activity-list" id="activityList">
+        <!-- logs go here -->
+      </div>
+    </div>
 
+    <!-- ADMIN ONLY -->
+    <div id="adminPanel" class="hidden">
+      <h3>Infinity Admin · GitHub Connected</h3>
       <div class="admin-grid">
-        <div>
-          <label style="font-size:12px;">GitHub Token</label>
-          <input id="ghToken" class="admin-input" placeholder="ghp_… or fine-grained token" />
+        <div class="admin-box">
+          <div class="form-group">
+            <label for="ghToken">GitHub Token (PAT)</label>
+            <input id="ghToken" placeholder="ghp_...">
+          </div>
+          <div class="form-group">
+            <label for="ghOwner">Owner / Username</label>
+            <input id="ghOwner" placeholder="pewpi-infinity">
+          </div>
+          <div class="form-group">
+            <label for="ghRepo">Repo name</label>
+            <input id="ghRepo" placeholder="Infinity-Vectors">
+          </div>
+          <div class="form-group">
+            <label for="ghPath">File path in repo</label>
+            <input id="ghPath" value="index.html">
+          </div>
+          <div class="form-group">
+            <label for="ghMsg">Commit message</label>
+            <input id="ghMsg" value="update from Infinity portal">
+          </div>
+          <button class="btn-inline" onclick="pushToGitHub()">↑ Push current page → GitHub</button>
+          <div id="pushStatus" class="status-line"></div>
         </div>
-        <div>
-          <label style="font-size:12px;">Owner / Username</label>
-          <input id="ghOwner" class="admin-input" value="pewpi-infinity" />
-        </div>
-        <div>
-          <label style="font-size:12px;">Repo name</label>
-          <input id="ghRepo" class="admin-input" value="Infinity-Vectors" />
-        </div>
-        <div>
-          <label style="font-size:12px;">File path in repo</label>
-          <input id="ghPath" class="admin-input" value="index.html" />
-        </div>
-        <div>
-          <label style="font-size:12px;">Commit message</label>
-          <input id="ghMsg" class="admin-input" value="update from Infinity portal" />
+        <div class="admin-box">
+          <h4 style="margin:0 0 6px;font-size:13px;">Raw script drop (local)</h4>
+          <textarea id="customScript" placeholder="Paste long script here — it will be stored locally and re-hydrated on load."></textarea>
+          <button class="btn-inline" onclick="saveAdminScript()">Save local script</button>
+          <div id="scriptStatus" class="status-line"></div>
+          <p style="margin-top:6px;font-size:11px;color:var(--muted);">This does NOT push to GitHub — it just makes sure your admin additions stay in browser. Then you can push.</p>
         </div>
       </div>
-
-      <button class="push-btn" id="pushBtn">↑ Push current page → GitHub</button>
-      <div class="push-status" id="pushStatus"></div>
     </div>
 
-    <div class="panel">
-      <h3>Notes</h3>
-      <p style="color:var(--muted);font-size:13px;">
-        Admin toggle hides all the power stuff so you can see what normal users see. Tokens + activities live in localStorage, so the page will remember your counts.
-      </p>
-    </div>
   </main>
-</div>
+</section>
 
 <script>
-  // ====== LOGIN / SESSION ======
-  const loginView = document.getElementById('loginView');
-  const appView   = document.getElementById('appView');
-  const whoSpan   = document.getElementById('who');
-  const loginBtn  = document.getElementById('loginBtn');
-  const logoutBtn = document.getElementById('logoutBtn');
+  // ----- STORAGE KEYS -----
+  const USERS_KEY = 'infinity_users_v1';
+  const SESSION_KEY = 'infinity_session_v1';
+  const ADMIN_SCRIPT_KEY = 'infinity_custom_script_v1';
 
-  function showApp(name) {
-    loginView.style.display = 'none';
-    appView.style.display = 'block';
-    whoSpan.textContent = name || 'Kris';
-    localStorage.setItem('pewpiLoggedIn','1');
-    recordActivity('login'); // count it
+  // ----- UTIL -----
+  function nowStamp() {
+    return new Date().toLocaleString();
+  }
+
+  function loadUsers() {
+    const raw = localStorage.getItem(USERS_KEY);
+    if (raw) {
+      try { return JSON.parse(raw); } catch(e) { }
+    }
+    // seed default admin user
+    const seed = [{
+      username: 'Kris',
+      password: 'infinity',     // you can change in admin later
+      phone: '',
+      isAdmin: true,
+      tokens: 54,
+      activities: []
+    }];
+    localStorage.setItem(USERS_KEY, JSON.stringify(seed));
+    return seed;
+  }
+
+  function saveUsers(arr) {
+    localStorage.setItem(USERS_KEY, JSON.stringify(arr));
+  }
+
+  function getSession() {
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    try { return JSON.parse(raw); } catch(e) { return null; }
+  }
+
+  function setSession(obj) {
+    localStorage.setItem(SESSION_KEY, JSON.stringify(obj));
+  }
+
+  // ----- AUTH -----
+  function login() {
+    const u = document.getElementById('loginUser').value.trim();
+    const p = document.getElementById('loginPass').value.trim();
+    const msg = document.getElementById('loginMsg');
+    msg.textContent = '';
+    const users = loadUsers();
+    const found = users.find(x => x.username.toLowerCase() === u.toLowerCase() && x.password === p);
+    if (!found) {
+      msg.textContent = 'Invalid username or password.';
+      return;
+    }
+    setSession({ username: found.username });
+    showDashboard(found.username);
+  }
+
+  function logout() {
+    // optional auto push on logout
+    const ghToken = document.getElementById('ghToken')?.value?.trim();
+    const ghOwner = document.getElementById('ghOwner')?.value?.trim();
+    const ghRepo = document.getElementById('ghRepo')?.value?.trim();
+    if (ghToken && ghOwner && ghRepo) {
+      // don't block logout, fire and forget
+      pushToGitHub(true);
+    }
+    localStorage.removeItem(SESSION_KEY);
+    document.getElementById('dashboard').classList.add('hidden');
+    document.getElementById('loginScreen').classList.remove('hidden');
+  }
+
+  function showCreate() {
+    document.getElementById('loginCard').classList.add('hidden');
+    document.getElementById('createCard').classList.remove('hidden');
   }
   function showLogin() {
-    appView.style.display = 'none';
-    loginView.style.display = 'flex';
-    localStorage.removeItem('pewpiLoggedIn');
+    document.getElementById('createCard').classList.add('hidden');
+    document.getElementById('loginCard').classList.remove('hidden');
   }
 
-  if (localStorage.getItem('pewpiLoggedIn') === '1') {
-    showApp('Kris');
-  }
-
-  loginBtn.onclick = () => {
-    const u = document.getElementById('user').value.trim();
-    const p = document.getElementById('pass').value.trim();
-    if ((u === 'Kris' || u === 'kris') && (p === 'Kris' || p === 'kris')) {
-      showApp(u || 'Kris');
-    } else {
-      alert('Bad login. For now use username: Kris, password: Kris');
+  function createAccount() {
+    const u = document.getElementById('newUser').value.trim();
+    const p = document.getElementById('newPass').value.trim();
+    const ph = document.getElementById('newPhone').value.trim();
+    const msg = document.getElementById('createMsg');
+    if (!u || !p) {
+      msg.textContent = 'Username and password required.';
+      return;
     }
-  };
-  logoutBtn.onclick = showLogin;
-
-  // ====== ADMIN TOGGLE ======
-  let adminMode = false;
-  const adminPanel = document.getElementById('adminPanel');
-  const adminBadge = document.getElementById('adminBadge');
-  const adminToggleBtn = document.getElementById('adminToggleBtn');
-
-  function setAdmin(on) {
-    adminMode = on;
-    adminPanel.style.display = on ? 'block' : 'none';
-    adminBadge.style.display = on ? 'inline-block' : 'none';
-    adminToggleBtn.textContent = on ? 'Admin (on)' : 'Admin';
-  }
-  adminToggleBtn.onclick = () => {
-    setAdmin(!adminMode);
-    recordActivity(adminMode ? 'admin:on' : 'admin:off');
-  };
-  // start in user mode
-  setAdmin(false);
-
-  // ====== TOKENS / ACTIVITY ======
-  const actEl = document.getElementById('activityCount');
-  const tokEl = document.getElementById('tokenCount');
-
-  function loadCounts() {
-    const a = parseInt(localStorage.getItem('pewpiActivities') || '0', 10);
-    const t = parseInt(localStorage.getItem('pewpiTokens') || '0', 10);
-    actEl.textContent = a;
-    tokEl.textContent = t;
-  }
-  loadCounts();
-
-  function saveCounts(a, t) {
-    localStorage.setItem('pewpiActivities', String(a));
-    localStorage.setItem('pewpiTokens', String(t));
-  }
-
-  function recordActivity(label) {
-    // console.log('activity:', label);
-    let a = parseInt(localStorage.getItem('pewpiActivities') || '0', 10);
-    a = a + 1;
-    // simple token formula – change anytime
-    const tokens = a * 5;
-    saveCounts(a, tokens);
-    actEl.textContent = a;
-    tokEl.textContent = tokens;
-  }
-
-  // count page open as an activity if logged in
-  if (localStorage.getItem('pewpiLoggedIn') === '1') {
-    recordActivity('visit:portal');
-  }
-
-  // ====== GITHUB PUSH ======
-  async function pushToGitHub() {
-    const token = document.getElementById('ghToken').value.trim();
-    const owner = document.getElementById('ghOwner').value.trim();
-    const repo  = document.getElementById('ghRepo').value.trim();
-    const path  = document.getElementById('ghPath').value.trim() || 'index.html';
-    const msg   = document.getElementById('ghMsg').value.trim() || 'update from Infinity portal';
-    const statusEl = document.getElementById('pushStatus');
-
-    if (!token) { statusEl.textContent = '❗ Token missing.'; return; }
-
-    // capture page html
-    const html = document.documentElement.outerHTML;
-    const content = btoa(unescape(encodeURIComponent(html)));
-
-    statusEl.textContent = 'Pushing…';
-
-    let sha = null;
-    try {
-      const getRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Accept': 'application/vnd.github+json'
-        }
-      });
-      if (getRes.ok) {
-        const fileData = await getRes.json();
-        sha = fileData.sha;
-      }
-    } catch(e) {
-      console.warn('Could not get existing file sha, will create new.', e);
+    const users = loadUsers();
+    if (users.find(x => x.username.toLowerCase() === u.toLowerCase())) {
+      msg.textContent = 'Username already exists.';
+      return;
     }
-
-    const body = { message: msg, content: content };
-    if (sha) body.sha = sha;
-
-    try {
-      const putRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Accept': 'application/vnd.github+json'
-        },
-        body: JSON.stringify(body)
-      });
-      const data = await putRes.json();
-      if (putRes.ok) {
-        statusEl.textContent = `Pushed ✅ Commit: ${data.commit && data.commit.sha ? data.commit.sha.slice(0,6) : 'ok'}`;
-        const lastCommitEl = document.getElementById('lastCommit');
-        if (lastCommitEl && data.commit && data.commit.sha) {
-          lastCommitEl.textContent = data.commit.sha.slice(0,10);
-        }
-        recordActivity('push:github');
-      } else {
-        statusEl.textContent = '❗ GitHub error: ' + (data.message || 'unknown');
-      }
-    } catch (err) {
-      statusEl.textContent = '❗ Network / fetch error.';
-    }
+    const newUser = {
+      username: u,
+      password: p,
+      phone: ph,
+      isAdmin: false,
+      tokens: 0,
+      activities: []
+    };
+    users.push(newUser);
+    saveUsers(users);
+    setSession({ username: u });
+    showDashboard(u);
   }
-  const pushBtn = document.getElementById('pushBtn');
-  if (pushBtn) pushBtn.onclick = pushToGitHub;
-</script>
 
-</body>
-</html>
+  // ----- DASHBOARD RENDER -----
+  function showDashboard(username) {
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('hidden');
+    document.getElementById('userNameLbl').textContent = username;
+    document.getElementById('welcomeTitle').textContent = 'Welcome back, ' + u
