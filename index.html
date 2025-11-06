@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>INFINITY · vectors</title>
+  <title>Infinity Portal · single-file rig</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
@@ -32,16 +32,13 @@
       border-bottom: 1px solid rgba(148,163,184,.15);
       backdrop-filter: blur(4px);
     }
-    header h1 {
-      margin: 0;
-      font-size: .9rem;
-      letter-spacing: .04em;
-    }
+    header h1 { margin: 0; font-size: .9rem; letter-spacing: .04em; }
     header small { font-size: .6rem; opacity: .6; }
+
     main {
       flex: 1;
       display: grid;
-      grid-template-columns: minmax(260px, 380px) minmax(240px, 1fr);
+      grid-template-columns: minmax(250px, 340px) minmax(360px, 1fr);
       gap: 1rem;
       padding: 1rem;
     }
@@ -57,16 +54,7 @@
       flex-direction: column;
       gap: .4rem;
     }
-    .login-card h2 {
-      font-size: .75rem;
-      margin: 0 0 .2rem 0;
-    }
-    label {
-      display: block;
-      font-size: .58rem;
-      opacity: .7;
-      margin-bottom: .15rem;
-    }
+    label { font-size: .58rem; opacity: .7; margin-bottom: .1rem; display:block; }
     input {
       width: 100%;
       background: rgba(15,23,42,.4);
@@ -75,7 +63,7 @@
       padding: .35rem .45rem;
       color: #fff;
       font-size: .65rem;
-      margin-bottom: .4rem;
+      margin-bottom: .35rem;
     }
     button {
       background: var(--accent);
@@ -86,56 +74,26 @@
       font-size: .65rem;
       cursor: pointer;
     }
-    .muted-link {
+    .muted-btn {
       background: rgba(15,23,42,.15);
       border: 1px solid rgba(148,163,184,.15);
       color: #fff;
     }
-    .ai-card {
+    .right-pane {
       padding: .6rem;
       display: flex;
       flex-direction: column;
+      gap: .5rem;
     }
-    .ai-card h2 {
-      font-size: .7rem;
-      margin: 0 0 .3rem 0;
+    .section-title {
+      font-size: .65rem;
+      margin: 0 0 .25rem 0;
     }
-    .ai-log {
-      flex: 1;
-      background: rgba(2,6,23,.25);
-      border: 1px solid rgba(148,163,184,.05);
-      border-radius: .5rem;
-      padding: .4rem;
-      font-size: .58rem;
-      overflow-y: auto;
-      min-height: 120px;
-    }
-    .ai-input-wrap {
-      display: flex;
-      gap: .35rem;
-      margin-top: .35rem;
-    }
-    .ai-input-wrap input { margin-bottom: 0; }
-    .quick-links {
-      margin-top: .5rem;
-      display: flex;
-      gap:.35rem;
-      flex-wrap: wrap;
-    }
-    .quick-links button {
-      background: rgba(15,23,42,.15);
-      border: 1px solid rgba(148,163,184,.12);
-      color: #fff;
-      font-size: .55rem;
-      padding: .25rem .5rem;
-      border-radius: .35rem;
-    }
-    /* 3D cube — minimal add */
+    /* 3D cube */
     .cube-shell {
-      width: 110px;
-      height: 110px;
-      perspective: 600px;
-      margin-bottom: .5rem;
+      width: 120px;
+      height: 120px;
+      perspective: 650px;
     }
     .cube {
       width: 100%;
@@ -148,58 +106,71 @@
       position: absolute;
       width: 100%;
       height: 100%;
-      background: linear-gradient(160deg, rgba(56,189,248,.7), rgba(3,7,18,0));
-      border: 1px solid rgba(148,163,184,.12);
-      border-radius: .5rem;
+      background: linear-gradient(160deg, rgba(56,189,248,.8), rgba(3,7,18,0));
+      border: 1px solid rgba(148,163,184,.15);
+      border-radius: .4rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: .6rem;
-      text-transform: uppercase;
+      font-size: .55rem;
       letter-spacing: .04em;
+      text-transform: uppercase;
     }
-    .cube-face:nth-child(1) { transform: rotateY(0deg) translateZ(55px); }
-    .cube-face:nth-child(2) { transform: rotateY(90deg) translateZ(55px); }
-    .cube-face:nth-child(3) { transform: rotateY(180deg) translateZ(55px); }
-    .cube-face:nth-child(4) { transform: rotateY(-90deg) translateZ(55px); }
-    .cube-face:nth-child(5) { transform: rotateX(90deg) translateZ(55px); }
-    .cube-face:nth-child(6) { transform: rotateX(-90deg) translateZ(55px); }
+    .cube-face:nth-child(1) { transform: rotateY(0deg) translateZ(60px); }
+    .cube-face:nth-child(2) { transform: rotateY(90deg) translateZ(60px); }
+    .cube-face:nth-child(3) { transform: rotateY(180deg) translateZ(60px); }
+    .cube-face:nth-child(4) { transform: rotateY(-90deg) translateZ(60px); }
+    .cube-face:nth-child(5) { transform: rotateX(90deg) translateZ(60px); }
+    .cube-face:nth-child(6) { transform: rotateX(-90deg) translateZ(60px); }
     @keyframes spin {
       0% { transform: rotateX(-18deg) rotateY(0deg); }
       100% { transform: rotateX(-18deg) rotateY(360deg); }
     }
-    /* inline portal — hidden until click */
-    #portal-panel {
-      display: none;
-      margin-top: .5rem;
-      background: rgba(2,6,23,.3);
-      border: 1px solid rgba(148,163,184,.08);
+
+    .activity-box, .receipts-box {
+      background: rgba(2,6,23,.25);
+      border: 1px solid rgba(148,163,184,.04);
+      border-radius: .5rem;
+      padding: .35rem;
+      font-size: .54rem;
+      max-height: 120px;
+      overflow: auto;
+    }
+    .portal-launcher {
+      background: rgba(2,6,23,.15);
+      border: 1px solid rgba(148,163,184,.03);
       border-radius: .5rem;
       padding: .4rem;
     }
-    #portal-panel.active {
-      display: block;
-    }
-    .portal-grid {
+    .portal-buttons {
       display: flex;
-      flex-wrap: wrap;
       gap: .35rem;
+      flex-wrap: wrap;
     }
-    .portal-item {
-      background: rgba(15,23,42,.5);
-      border: 1px solid rgba(148,163,184,.15);
-      border-radius: .4rem;
-      padding: .35rem .45rem;
+    .portal-button {
+      background: rgba(15,23,42,.25);
+      border: 1px solid rgba(148,163,184,.12);
+      border-radius: .35rem;
       font-size: .53rem;
-      min-width: 130px;
+      padding: .25rem .5rem;
+      cursor: pointer;
+    }
+    .portal-view {
+      margin-top: .4rem;
+      background: rgba(15,23,42,.35);
+      border: 1px solid rgba(148,163,184,.08);
+      border-radius: .4rem;
+      min-height: 70px;
+      padding: .35rem;
+      font-size: .54rem;
     }
     footer {
       text-align: center;
       font-size: .55rem;
-      padding: .35rem;
-      color: rgba(255,255,255,.35);
+      padding: .4rem;
+      color: rgba(255,255,255,.3);
     }
-    @media (max-width: 880px) {
+    @media (max-width: 820px) {
       main { grid-template-columns: 1fr; }
     }
   </style>
@@ -208,204 +179,223 @@
   <header>
     <div>
       <h1>INFINITY</h1>
-      <small>Unified login hatch · matches your portal</small>
+      <small>portal / vectors / pewpi cloud</small>
     </div>
     <div style="font-size:.6rem; opacity:.7;">Status: <span id="login-status">Guest</span></div>
   </header>
+
   <main>
-    <!-- LOGIN SIDE (your original structure) -->
+    <!-- LEFT: LOGIN -->
     <section class="card login-card">
-      <h2>Sign in to Infinity</h2>
-      <p style="font-size:.6rem; opacity:.7;">This writes your identity to <code>localStorage.infinityUser</code> so the portal can read it.</p>
+      <h2 style="font-size:.75rem; margin-bottom:.2rem;">Sign in to Infinity</h2>
+      <p style="font-size:.58rem; opacity:.75;">Writes to <code>localStorage.infinityUser</code> so ALL these pages can read it.</p>
       <label for="name">Display name</label>
       <input id="name" placeholder="Kris" />
       <label for="email">Email (optional)</label>
       <input id="email" type="email" placeholder="you@example.com" />
-      <button id="login-btn">Sign In</button>
-      <button id="logout-btn" class="muted-link" style="margin-top:.3rem;">Sign Out</button>
-
-      <h3 style="font-size:.6rem; margin-top:.7rem;">Quick links</h3>
-      <div class="quick-links">
-        <!-- changed this one -->
-        <button onclick="openPortal()">Portal</button>
-        <button onclick="logQuick('open-marketplace')">Marketplace</button>
-        <button onclick="logQuick('open-vector-spa')">Vector SPA</button>
+      <div style="display:flex; gap:.4rem;">
+        <button id="login-btn">Sign In</button>
+        <button id="logout-btn" class="muted-btn">Sign Out</button>
       </div>
+
+      <h3 style="font-size:.62rem; margin-top:.6rem;">Quick open</h3>
+      <div style="display:flex; gap:.35rem; flex-wrap:wrap;">
+        <button class="muted-btn" onclick="openPortal('infinity-portal-unified.html')">Portal Unified</button>
+        <button class="muted-btn" onclick="openPortal('infinity_portal_3d_zoom.html')">3D Portal</button>
+        <button class="muted-btn" onclick="openPortal('login.html')">Login (this repo)</button>
+      </div>
+
+      <p id="login-msg" style="font-size:.54rem; opacity:.6; margin-top:.4rem;"></p>
     </section>
 
-    <!-- AI / WATCHER SIDE -->
-    <section class="card ai-card">
-      <h2>AI → AI pewpi guide</h2>
-
-      <!-- ADDED 3D BOX -->
-      <div class="cube-shell" title="Infinity Vector Core">
-        <div class="cube">
-          <div class="cube-face">∞</div>
-          <div class="cube-face">PewPi</div>
-          <div class="cube-face">Vectors</div>
-          <div class="cube-face">Portal</div>
-          <div class="cube-face">Core</div>
-          <div class="cube-face">501</div>
+    <!-- RIGHT: EVERYTHING ELSE -->
+    <section class="card right-pane">
+      <div style="display:flex; gap:1rem; align-items:flex-start;">
+        <div class="cube-shell" title="Infinity Vector Core">
+          <div class="cube">
+            <div class="cube-face">∞</div>
+            <div class="cube-face">PewPi</div>
+            <div class="cube-face">Portal</div>
+            <div class="cube-face">Signals</div>
+            <div class="cube-face">Dealer</div>
+            <div class="cube-face">501</div>
+          </div>
+        </div>
+        <div style="flex:1;">
+          <h2 class="section-title">PewPi watcher</h2>
+          <div id="activityBox" class="activity-box">No activity yet.</div>
+          <h3 class="section-title" style="margin-top:.45rem;">Receipts</h3>
+          <div id="receiptsBox" class="receipts-box">No receipts yet.</div>
         </div>
       </div>
 
-      <div class="ai-log" id="ai-log">
-        <p><strong>pewpi:</strong> tell me your name and I will bind this browser to infinity.</p>
-      </div>
-      <div class="ai-input-wrap">
-        <input id="ai-input" placeholder="say: my name is …" />
-        <button id="ai-send">Send</button>
-      </div>
-      <p style="font-size:.53rem; opacity:.55; margin-top:.4rem;">
-        After login, other pages can read <code>infinityUser</code>. Watcher writes to <code>infinityActivity</code>.
-      </p>
-
-      <!-- INLINE PORTAL PANEL (shows when you click Portal) -->
-      <div id="portal-panel">
-        <h3 style="font-size:.6rem; margin-bottom:.3rem;">Infinity Portal</h3>
-        <div class="portal-grid">
-          <div class="portal-item">
-            <strong>Marketplace</strong><br />
-            list / trade / token
-          </div>
-          <div class="portal-item">
-            <strong>Radio</strong><br />
-            stream channel
-          </div>
-          <div class="portal-item">
-            <strong>Receipts</strong><br />
-            shows activity
-          </div>
-          <div class="portal-item">
-            <strong>Vectors</strong><br />
-            open builder
-          </div>
-        </div>
+      <!-- PORTAL LAUNCHER = all those htmls you showed -->
+      <div class="portal-launcher">
+        <h3 class="section-title">Infinity apps in this repo</h3>
+        <p style="font-size:.5rem; opacity:.6; margin-bottom:.35rem;">
+          Click to log + preview. This doesn’t fetch GitHub, it keeps it in this single file.
+        </p>
+        <div class="portal-buttons" id="portalButtons"></div>
+        <div class="portal-view" id="portalView">Select a page above to see its description.</div>
       </div>
     </section>
   </main>
-  <footer>Powered by Infinity – The Lending Giant</footer>
 
-  <!-- shared auth (your original pattern) + watcher -->
+  <footer>Infinity OS — single-file stitch so you can see everything in one place.</footer>
+
   <script>
-    // shared auth
+    // 1) shared auth (exactly what you wanted)
     (function () {
-      const STORAGE_KEY = "infinityUser";
+      const KEY = "infinityUser";
       const auth = {
-        getUser() {
-          try {
-            const raw = localStorage.getItem(STORAGE_KEY);
-            return raw ? JSON.parse(raw) : null;
-          } catch (e) { return null; }
+        get() {
+          try { return JSON.parse(localStorage.getItem(KEY)); } catch (e) { return null; }
         },
-        setUser(userObj) {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(userObj));
+        set(user) {
+          localStorage.setItem(KEY, JSON.stringify(user));
         },
         clear() {
-          localStorage.removeItem(STORAGE_KEY);
+          localStorage.removeItem(KEY);
         }
       };
       window.infinityAuth = auth;
     })();
 
-    // watcher / activity (quiet)
+    // 2) watcher / receipts in-page, stored local
     (function () {
       const ACT_KEY = "infinityActivity";
+      const REC_KEY = "infinityReceipts";
       const MAX = 200;
       const log = (action, extra) => {
-        const user = window.infinityAuth.getUser();
+        const user = window.infinityAuth.get();
         const raw = localStorage.getItem(ACT_KEY);
         const list = raw ? JSON.parse(raw) : [];
-        list.unshift({
+        const entry = {
           ts: new Date().toISOString(),
           user: user ? (user.name || user.email || "Infinity user") : "Guest",
-          path: location.pathname + location.hash,
           action,
           extra: extra || null
-        });
+        };
+        list.unshift(entry);
         localStorage.setItem(ACT_KEY, JSON.stringify(list.slice(0, MAX)));
+
+        // mirror to receipts
+        const rraw = localStorage.getItem(REC_KEY);
+        const rlist = rraw ? JSON.parse(rraw) : [];
+        rlist.unshift({
+          ts: entry.ts,
+          user: entry.user,
+          description: "Activity: " + action
+        });
+        localStorage.setItem(REC_KEY, JSON.stringify(rlist.slice(0, MAX)));
       };
-      window.__infinityLog = log;
+      window.infinityLog = log;
     })();
 
-    // page wiring
+    function renderActivity() {
+      const actBox = document.getElementById("activityBox");
+      const recBox = document.getElementById("receiptsBox");
+      const acts = JSON.parse(localStorage.getItem("infinityActivity") || "[]");
+      const recs = JSON.parse(localStorage.getItem("infinityReceipts") || "[]");
+
+      actBox.innerHTML = "";
+      if (!acts.length) {
+        actBox.textContent = "No activity yet.";
+      } else {
+        acts.slice(0, 50).forEach(item => {
+          const p = document.createElement("p");
+          p.textContent = `${item.ts} — ${item.user}: ${item.action}`;
+          actBox.appendChild(p);
+        });
+      }
+
+      recBox.innerHTML = "";
+      if (!recs.length) {
+        recBox.textContent = "No receipts yet.";
+      } else {
+        recs.slice(0, 50).forEach(item => {
+          const p = document.createElement("p");
+          p.textContent = `${item.ts} — ${item.user}: ${item.description}`;
+          recBox.appendChild(p);
+        });
+      }
+    }
+
+    // 3) login wiring
     const statusEl = document.getElementById("login-status");
-    const aiLog = document.getElementById("ai-log");
-    const aiInput = document.getElementById("ai-input");
-    const aiSend = document.getElementById("ai-send");
+    const msgEl = document.getElementById("login-msg");
 
     document.getElementById("login-btn").addEventListener("click", () => {
       const name = document.getElementById("name").value.trim();
       const email = document.getElementById("email").value.trim();
       if (!name && !email) {
-        alert("Enter a name or email.");
+        msgEl.textContent = "Enter a name or email.";
         return;
       }
-      const userObj = { name, email, ts: Date.now(), source: "infinity-login-hatch" };
-      window.infinityAuth.setUser(userObj);
-      statusEl.textContent = userObj.name || userObj.email || "Infinity user";
-      logAI("pewpi", "stored you in infinity. open the portal and it will see you.");
-      window.__infinityLog && window.__infinityLog("login");
+      const user = { name, email, ts: Date.now(), source: location.pathname };
+      window.infinityAuth.set(user);
+      statusEl.textContent = user.name || user.email || "Infinity user";
+      msgEl.textContent = "Saved to this browser.";
+      window.infinityLog("login");
+      renderActivity();
     });
 
     document.getElementById("logout-btn").addEventListener("click", () => {
       window.infinityAuth.clear();
       statusEl.textContent = "Guest";
-      logAI("pewpi", "cleared this browser from infinity.");
-      window.__infinityLog && window.__infinityLog("logout");
+      msgEl.textContent = "Signed out.";
+      window.infinityLog("logout");
+      renderActivity();
     });
 
-    function logAI(who, text) {
-      const p = document.createElement("p");
-      p.innerHTML = `<strong>${who}:</strong> ${text}`;
-      aiLog.appendChild(p);
-      aiLog.scrollTop = aiLog.scrollHeight;
+    // 4) portal list based on the filenames you showed in the screenshots
+    const FILE_LIST = [
+      "index.html",
+      "login.html",
+      "infinity.html",
+      "infinity-portal-unified.html",
+      "infinity_portal_3d_zoom.html",
+      "infinity_portal_explore_final.html",
+      "infinity_portal_ui.html",
+      "infinity_portal_v3_index.html",
+      "infinity_portal_einstein.jsx.js",
+      "pewpi-about.html",
+      "pi_singer.html",
+      "dashboard.html",
+      "about.html",
+      "infinity_demo_chat_single_file_no_apis.html",
+      "infinity_autopilot_repeater.html",
+      "watson_divot_healer.html"
+    ];
+
+    function buildPortalButtons() {
+      const container = document.getElementById("portalButtons");
+      FILE_LIST.forEach(fname => {
+        const btn = document.createElement("button");
+        btn.className = "portal-button";
+        btn.textContent = fname;
+        btn.addEventListener("click", () => openPortal(fname));
+        container.appendChild(btn);
+      });
     }
 
-    aiSend.addEventListener("click", () => {
-      const text = aiInput.value.trim();
-      if (!text) return;
-      logAI("you", text);
-      aiInput.value = "";
-      if (/name is/i.test(text)) {
-        const name = text.split(/name is/i)[1].trim();
-        window.infinityAuth.setUser({ name, ts: Date.now(), source: "ai-pewpi" });
-        statusEl.textContent = name;
-        logAI("pewpi", "ok " + name + ", go back to the portal, it will show you as signed in.");
-        window.__infinityLog && window.__infinityLog("set-name-from-pewpi", { name });
-      } else if (/portal/i.test(text)) {
-        openPortal();
-        logAI("pewpi", "opened portal inline.");
-      } else {
-        logAI("pewpi", "you can click Portal on the left.");
-      }
-    });
-
-    aiInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") aiSend.click();
-    });
-
-    function openPortal() {
-      const panel = document.getElementById("portal-panel");
-      panel.classList.add("active");
-      window.__infinityLog && window.__infinityLog("open-portal");
+    function openPortal(fname) {
+      const view = document.getElementById("portalView");
+      view.innerHTML = `<strong>${fname}</strong><br/><span style="opacity:.7;">This is listed from the single-file index so you can wire it. Click logged in watcher.</span>`;
+      window.infinityLog("open-portal-file", { file: fname });
+      renderActivity();
     }
 
-    // so button handlers can call
-    window.openPortal = openPortal;
-    window.logQuick = function (action) {
-      window.__infinityLog && window.__infinityLog(action);
-      logAI("pewpi", "logged: " + action);
-    };
-
-    // restore session
+    // restore saved user on load
     document.addEventListener("DOMContentLoaded", () => {
-      const u = window.infinityAuth.getUser();
+      const u = window.infinityAuth.get();
       if (u) {
         statusEl.textContent = u.name || u.email || "Infinity user";
         if (u.name) document.getElementById("name").value = u.name;
         if (u.email) document.getElementById("email").value = u.email;
       }
+      buildPortalButtons();
+      renderActivity();
     });
   </script>
 </body>
