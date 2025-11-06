@@ -6,123 +6,86 @@
   <title>PewPi · Infinity Portal</title>
   <meta name="color-scheme" content="dark"/>
   <style>
-    /* all your existing CSS exactly as before … */
+    /* === all your original Infinity-Vectors CSS === */
+    :root {
+      --bg: radial-gradient(circle at top,#030816 0%,#01030a 45%,#000 100%);
+      --panel: rgba(2,11,25,.75);
+      --line: #12b5ff;
+      --accent:#5f6fff;
+      --muted:#94a3b8;
+      --text:#dbeafe;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,sans-serif;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);min-height:100vh;color:var(--text)}
+    .hidden{display:none!important}
+    /* … all your login, dashboard, and admin styling from before … */
   </style>
 </head>
 <body>
-  <!-- everything you pasted above stays identical … -->
+<!-- === Infinity Portal markup exactly as before === -->
+<section id="loginScreen">…</section>
+<section id="dashboard" class="hidden">…</section>
 
-  <!-- add one small Rogers chat panel -->
-  <div id="rogersPanel" class="hidden" style="position:fixed;bottom:20px;right:20px;width:340px;background:rgba(1,9,18,.9);border:1px solid rgba(18,181,255,.2);border-radius:16px;padding:10px 12px;color:#e0f2fe;font-size:14px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-      <strong>🎙 Rogers AI</strong>
-      <button onclick="toggleRogers()" style="background:none;border:none;color:#38bdf8;font-size:18px;cursor:pointer;">×</button>
-    </div>
-    <div id="rogersOut" style="max-height:160px;overflow-y:auto;margin-bottom:6px;font-size:13.5px;color:#cbd5e1;"></div>
-    <textarea id="rogersIn" placeholder="Ask Infinity..." style="width:100%;border-radius:8px;padding:6px;font-size:13px;color:black;"></textarea>
-    <button onclick="sendRogers()" style="margin-top:6px;background:#38bdf8;border:none;color:white;padding:5px 10px;border-radius:8px;">Send</button>
+<!-- === Rogers floating panel === -->
+<div id="rogersPanel" style="position:fixed;bottom:20px;right:20px;width:340px;background:rgba(1,9,18,.95);border:1px solid rgba(18,181,255,.3);border-radius:16px;padding:10px 12px;color:#e0f2fe;font-size:14px;z-index:9999;display:none;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+    <strong>🎙 Rogers AI</strong>
+    <button id="rogersClose" style="background:none;border:none;color:#38bdf8;font-size:18px;cursor:pointer;">×</button>
   </div>
+  <div id="rogersOut" style="max-height:160px;overflow-y:auto;margin-bottom:6px;font-size:13.5px;color:#cbd5e1;"></div>
+  <textarea id="rogersIn" placeholder="Ask Infinity…" style="width:100%;border-radius:8px;padding:6px;font-size:13px;color:black;"></textarea>
+  <button id="rogersSend" style="margin-top:6px;background:#38bdf8;border:none;color:white;padding:5px 10px;border-radius:8px;">Send</button>
+</div>
 
 <script>
-/* === all your existing JS from above stays the same until the last line you posted === */
-/* then append this new block underneath your current functions */
+/* === all your previous JS logic (users, login, dashboard, admin, etc.) === */
+/* place this Rogers add-on at the very bottom so nothing breaks */
 
-  // --- secure encoded Gemini key (pewpi) ---
-  const pewpi = atob("QUl6YVN5RFdLUmhCakZFdDc1MnpDODZYMGFRT3ZSUUh4TTVYUGxj");
-  const geminiBase = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent";
-
-  function toggleRogers(){
-    const el = document.getElementById('rogersPanel');
-    el.classList.toggle('hidden');
-  }
-
-  async function sendRogers(){
-    const box = document.getElementById('rogersOut');
-    const q = document.getElementById('rogersIn').value.trim();
-    if(!q) return;
-    const userSpan = `<div><b>You:</b> ${q}</div>`;
-    box.insertAdjacentHTML('beforeend', userSpan);
-    document.getElementById('rogersIn').value = '';
-
-    try{
-      const res = await fetch(`${geminiBase}?key=${pewpi}`,{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({contents:[{parts:[{text:q}]}]})
-      });
-      const j = await res.json();
-      const reply = j?.candidates?.[0]?.content?.parts?.[0]?.text || "(no response)";
-      const aiSpan = `<div style="color:#93c5fd;"><b>Rogers:</b> ${reply}</div>`;
-      box.insertAdjacentHTML('beforeend', aiSpan);
-      box.scrollTop = box.scrollHeight;
-
-      // speak aloud
-      const u = new SpeechSynthesisUtterance(reply);
-      u.voice = speechSynthesis.getVoices()[0];
-      speechSynthesis.speak(u);
-    }catch(err){
-      box.insertAdjacentHTML('beforeend', `<div style="color:#fca5a5;">Error: ${err.message}</div>`);
-    }
-  }
-
-  // optional: hotkey open with Alt+R
-  document.addEventListener('keydown',e=>{
-    if(e.altKey && e.key.toLowerCase()==='r') toggleRogers();
-  });
-</script>
-</body>
-</html>
-<script type="module">
-/* --- Infinity-Vectors Rogers AI Add-On --- */
 (async ()=>{
-  // create panel dynamically so it never overwrites anything
-  const panel = document.createElement('div');
-  panel.innerHTML = `
-    <div id="rogersPanel" style="position:fixed;bottom:20px;right:20px;width:340px;background:rgba(1,9,18,.95);border:1px solid rgba(18,181,255,.3);border-radius:16px;padding:10px 12px;color:#e0f2fe;font-size:14px;z-index:9999;display:none;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-        <strong>🎙 Rogers AI</strong>
-        <button id="rogersClose" style="background:none;border:none;color:#38bdf8;font-size:18px;cursor:pointer;">×</button>
-      </div>
-      <div id="rogersOut" style="max-height:160px;overflow-y:auto;margin-bottom:6px;font-size:13.5px;color:#cbd5e1;"></div>
-      <textarea id="rogersIn" placeholder="Ask Infinity..." style="width:100%;border-radius:8px;padding:6px;font-size:13px;color:black;"></textarea>
-      <button id="rogersSend" style="margin-top:6px;background:#38bdf8;border:none;color:white;padding:5px 10px;border-radius:8px;">Send</button>
-    </div>`;
-  document.body.appendChild(panel);
-
-  const el = document.getElementById('rogersPanel');
-  const out = document.getElementById('rogersOut');
+  const panel = document.getElementById('rogersPanel');
+  const out   = document.getElementById('rogersOut');
   const input = document.getElementById('rogersIn');
+  const close = document.getElementById('rogersClose');
+  const sendB = document.getElementById('rogersSend');
 
-  function toggle(show){ el.style.display = show ? 'block' : 'none'; }
+  function toggle(show){ panel.style.display = show ? 'block':'none'; }
+  close.onclick = ()=>toggle(false);
   document.addEventListener('keydown',e=>{
-    if(e.altKey && e.key.toLowerCase()==='r') toggle(el.style.display==='none');
+    if(e.altKey && e.key.toLowerCase()==='r')
+      toggle(panel.style.display==='none');
   });
-  document.getElementById('rogersClose').onclick=()=>toggle(false);
-
-  const pewpi = atob("QUl6YVN5RFdLUmhCakZFdDc1MnpDODZYMGFRT3ZSUUh4TTVYUGxj");
-  const base = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent";
 
   async function send(msg){
     out.insertAdjacentHTML('beforeend',`<div><b>You:</b> ${msg}</div>`);
     input.value='';
     try{
-      const r=await fetch(`${base}?key=${pewpi}`,{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({contents:[{parts:[{text:msg}]}]})
+      // call your local proxy (Flask) so key is hidden
+      const r = await fetch("http://localhost:5000/genai",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({prompt:msg})
       });
-      const j=await r.json();
-      const reply=j?.candidates?.[0]?.content?.parts?.[0]?.text||"(no reply)";
-      out.insertAdjacentHTML('beforeend',`<div style="color:#93c5fd;"><b>Rogers:</b> ${reply}</div>`);
-      out.scrollTop=out.scrollHeight;
-      const u=new SpeechSynthesisUtterance(reply);
-      u.voice=speechSynthesis.getVoices()[0];
+      if(!r.ok){
+        out.insertAdjacentHTML('beforeend',
+          `<div style="color:#fca5a5;">HTTP ${r.status}</div>`);
+        return;
+      }
+      const j = await r.json();
+      const reply = j?.candidates?.[0]?.content?.parts?.[0]?.text || "(no reply)";
+      out.insertAdjacentHTML('beforeend',
+        `<div style="color:#93c5fd;"><b>Rogers:</b> ${reply}</div>`);
+      out.scrollTop = out.scrollHeight;
+      const u = new SpeechSynthesisUtterance(reply);
+      u.voice = speechSynthesis.getVoices()[0];
       speechSynthesis.speak(u);
     }catch(e){
-      out.insertAdjacentHTML('beforeend',`<div style="color:#fca5a5;">Error: ${e.message}</div>`);
+      out.insertAdjacentHTML('beforeend',
+        `<div style="color:#fca5a5;">Error: ${e.message}</div>`);
     }
   }
-  document.getElementById('rogersSend').onclick=()=>send(input.value.trim());
+  sendB.onclick = ()=>{ const m=input.value.trim(); if(m) send(m); };
 })();
 </script>
-
+</body>
+</html>
