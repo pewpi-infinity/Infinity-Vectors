@@ -1,726 +1,169 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Infinity Portal - Dashboard</title>
+  <meta charset="utf-8"/>
+  <title>Infinity-Vectors Diagnostic</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <style>
-    /* ========== Root Variables ========== */
     :root {
-      --bg-dark: #0a0e1a;
-      --bg-panel: #141827;
-      --bg-card: #1a1f35;
-      --accent-primary: #00d4ff;
-      --accent-secondary: #7b2cbf;
-      --text-primary: #e9ecef;
-      --text-muted: #8b95a8;
-      --border-glow: rgba(0, 212, 255, 0.3);
-      --shadow-glow: 0 0 20px rgba(0, 212, 255, 0.15);
-      --success-color: #22c55e;
-      --warning-color: #f59e0b;
+      --bg: #0b1120;
+      --panel: #111827;
+      --accent: #0ea5e9;
+      --muted: #94a3b8;
+      --danger: #f43f5e;
+      --ok: #22c55e;
     }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #0a0e1a 0%, #1a1f35 100%);
-      color: var(--text-primary);
-      min-height: 100vh;
-      padding: 0;
-      position: relative;
-      overflow-x: hidden;
+      margin:0;
+      background: radial-gradient(circle at top, #0f172a 0%, #020617 70%);
+      color:#e2e8f0;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
     }
-
-    /* Animated background effect */
-    body::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
-      background-size: 40px 40px;
-      animation: drift 25s linear infinite;
-      pointer-events: none;
-      z-index: 0;
+    .shell {
+      background: rgba(15, 23, 42, .6);
+      border:1px solid rgba(14,165,233,.3);
+      border-radius:18px;
+      max-width:660px;
+      width:100%;
+      box-shadow:0 20px 40px rgba(0,0,0,.25);
+      backdrop-filter: blur(10px);
+      padding:20px 22px 24px;
     }
-
-    @keyframes drift {
-      0% { transform: translate(0, 0) rotate(0deg); }
-      100% { transform: translate(40px, 40px) rotate(5deg); }
+    h1 {
+      margin:0 0 6px 0;
+      font-size:28px;
+      letter-spacing:.04em;
     }
-
-    /* Header */
-    .header {
-      background: var(--bg-panel);
-      border-bottom: 1px solid var(--border-glow);
-      padding: 20px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-      position: sticky;
-      top: 0;
-      z-index: 100;
+    .tagline {
+      color:var(--muted);
+      margin-bottom:18px;
     }
-
-    .logo-area {
-      display: flex;
-      align-items: center;
-      gap: 15px;
+    .row {
+      background: rgba(2,6,23,.4);
+      border:1px solid rgba(148,163,184,.08);
+      border-radius:12px;
+      padding:12px 14px 10px;
+      margin-bottom:12px;
     }
-
-    .logo-text {
-      font-size: 28px;
-      font-weight: 900;
-      letter-spacing: 2px;
-      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+    .label {
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      color:var(--muted);
+      margin-bottom:3px;
     }
-
-    .ai-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(0, 212, 255, 0.1);
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-size: 11px;
-      color: var(--accent-primary);
-      border: 1px solid rgba(0, 212, 255, 0.3);
-      animation: pulse 2s ease-in-out infinite;
+    .val {
+      font-weight:600;
+      font-size:15px;
+      word-break:break-all;
     }
-    .ai-badge::before {
-      content: '🤖';
+    .pill {
+      display:inline-flex;
+      gap:5px;
+      align-items:center;
+      background:rgba(14,165,233,.12);
+      border:1px solid rgba(14,165,233,.3);
+      padding:4px 11px;
+      border-radius:999px;
+      font-size:12px;
+      margin-bottom:10px;
     }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.6; }
+    .warn {
+      background: rgba(244,63,94,.14);
+      border-color: rgba(244,63,94,.35);
+      color:#ffe4e6;
     }
-
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 20px;
+    .ok {
+      background: rgba(34,197,94,.12);
+      border-color: rgba(34,197,94,.35);
+      color:#dcfce7;
     }
-
-    .user-name {
-      color: var(--text-primary);
-      font-weight: 600;
+    #admin-box {
+      display:none;
+      margin-top:14px;
     }
-
-    .logout-btn,
-    .admin-btn {
-      background: rgba(239, 68, 68, 0.1);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      color: #fca5a5;
-      padding: 8px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.3s ease;
-    }
-
-    .logout-btn:hover,
-    .admin-btn:hover {
-      background: rgba(239, 68, 68, 0.2);
-      transform: translateY(-2px);
-    }
-
-    .admin-btn {
-      background: rgba(0, 212, 255, 0.06);
-      border: 1px solid rgba(0, 212, 255, 0.3);
-      color: var(--accent-primary);
-    }
-
-    /* Main Content */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 30px 20px;
-      position: relative;
-      z-index: 1;
-    }
-
-    /* Welcome Section */
-    .welcome-card {
-      background: var(--bg-panel);
-      border-radius: 20px;
-      padding: 40px;
-      margin-bottom: 30px;
-      box-shadow: var(--shadow-glow), 0 10px 40px rgba(0, 0, 0, 0.5);
-      border: 1px solid var(--border-glow);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .welcome-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
-    }
-
-    .welcome-card h1 {
-      font-size: 36px;
-      margin-bottom: 10px;
-      background: linear-gradient(135deg, var(--accent-primary), white);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .welcome-subtitle {
-      color: var(--text-muted);
-      font-size: 16px;
-      margin-bottom: 20px;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      margin-top: 30px;
-    }
-
-    .stat-card {
-      background: var(--bg-card);
-      padding: 20px;
-      border-radius: 12px;
-      border: 1px solid rgba(0, 212, 255, 0.2);
-    }
-
-    .stat-label {
-      color: var(--text-muted);
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 8px;
-    }
-
-    .stat-value {
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--accent-primary);
-    }
-
-    /* Activity Log */
-    .activity-section {
-      background: var(--bg-panel);
-      border-radius: 20px;
-      padding: 30px;
-      box-shadow: var(--shadow-glow), 0 10px 40px rgba(0, 0, 0, 0.5);
-      border: 1px solid var(--border-glow);
-      margin-bottom: 30px;
-    }
-
-    .activity-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 25px;
-    }
-
-    .activity-header h2 {
-      font-size: 24px;
-      color: var(--text-primary);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .clear-btn {
-      background: rgba(239, 68, 68, 0.1);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      color: #fca5a5;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .clear-btn:hover {
-      background: rgba(239, 68, 68, 0.2);
-    }
-
-    .activity-log {
-      max-height: 500px;
-      overflow-y: auto;
-      padding-right: 10px;
-    }
-
-    .activity-log::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    .activity-log::-webkit-scrollbar-track {
-      background: var(--bg-card);
-      border-radius: 4px;
-    }
-
-    .activity-log::-webkit-scrollbar-thumb {
-      background: rgba(0, 212, 255, 0.3);
-      border-radius: 4px;
-    }
-
-    .activity-log::-webkit-scrollbar-thumb:hover {
-      background: rgba(0, 212, 255, 0.5);
-    }
-
-    .activity-item {
-      background: var(--bg-card);
-      border-left: 3px solid var(--accent-primary);
-      padding: 15px 20px;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      animation: slideIn 0.5s ease-out;
-      position: relative;
-      overflow: hidden;
-    }
-
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateX(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
-    }
-
-    .activity-time {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-bottom: 5px;
-    }
-
-    .activity-action {
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 5px;
-      font-size: 15px;
-    }
-
-    .activity-details {
-      color: var(--text-muted);
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .activity-narrator {
-      margin-top: 8px;
-      padding: 10px;
-      background: rgba(0, 212, 255, 0.05);
-      border-radius: 6px;
-      font-style: italic;
-      color: var(--accent-primary);
-      font-size: 13px;
-      border-left: 2px solid var(--accent-primary);
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--text-muted);
-    }
-
-    .empty-state-icon {
-      font-size: 64px;
-      margin-bottom: 20px;
-      opacity: 0.3;
-    }
-
-    /* Quick Actions */
-    .quick-actions {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      margin-top: 30px;
-      margin-bottom: 80px;
-    }
-
-    .action-card {
-      background: var(--bg-panel);
-      border-radius: 15px;
-      padding: 25px;
-      border: 1px solid var(--border-glow);
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .action-card:hover {
-      transform: translateY(-5px);
-      box-shadow: var(--shadow-glow);
-      border-color: var(--accent-primary);
-    }
-
-    .action-icon {
-      font-size: 32px;
-      margin-bottom: 15px;
-    }
-
-    .action-title {
-      font-weight: 700;
-      font-size: 18px;
-      margin-bottom: 8px;
-      color: var(--text-primary);
-    }
-
-    .action-desc {
-      color: var(--text-muted);
-      font-size: 14px;
-      line-height: 1.4;
-    }
-
-    /* Admin Panel (new) */
-    #admin-panel {
-      position: fixed;
-      top: 75px;
-      right: 0;
-      width: min(360px, 100vw);
-      bottom: 0;
-      background: rgba(10, 14, 24, 0.97);
-      border-left: 1px solid rgba(0, 212, 255, 0.25);
-      padding: 15px 16px 120px;
-      overflow-y: auto;
-      z-index: 300;
-      display: none;
-      backdrop-filter: blur(18px);
-    }
-    #admin-panel.show {
-      display: block;
-    }
-    .admin-title {
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-    .admin-note {
-      background: rgba(249, 115, 22, 0.08);
-      border: 1px solid rgba(249, 115, 22, 0.35);
-      border-radius: 10px;
-      padding: 6px 8px;
-      font-size: 12px;
-      margin-bottom: 12px;
-    }
-    .admin-group {
-      margin-bottom: 12px;
-    }
-    .admin-group label {
-      display: block;
-      font-size: 13px;
-      margin-bottom: 4px;
-    }
-    .admin-group input,
-    .admin-group textarea {
-      width: 100%;
-      background: rgba(255,255,255,0.01);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 8px;
-      padding: 7px 8px;
-      color: var(--text-primary);
-      font-size: 13px;
-    }
-    .admin-group textarea {
-      min-height: 90px;
-      resize: vertical;
+    textarea {
+      width:100%;
+      min-height:80px;
+      border-radius:10px;
+      border:1px solid rgba(148,163,184,.15);
+      background:rgba(15,23,42,.3);
+      color:#e2e8f0;
+      padding:8px 10px;
       font-family: ui-monospace, SFMono-Regular, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      resize:vertical;
     }
-    .admin-btn-main {
-      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-      border: none;
-      border-radius: 10px;
-      padding: 9px 12px;
-      font-weight: 600;
-      color: #fff;
-      cursor: pointer;
-      margin-bottom: 8px;
-    }
-    #gh-status {
-      font-size: 12px;
-      min-height: 18px;
-    }
-    .status-ok { color: #bbf7d0; }
-    .status-bad { color: #fecaca; }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      .header {
-        padding: 15px 20px;
-        flex-direction: column;
-        gap: 15px;
-      }
-      .welcome-card {
-        padding: 25px;
-      }
-      .welcome-card h1 {
-        font-size: 28px;
-      }
-      .activity-section {
-        padding: 20px;
-      }
-      .activity-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-      }
+    button {
+      background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+      color:#0f172a;
+      border:0;
+      border-radius:10px;
+      padding:7px 14px;
+      font-weight:600;
+      cursor:pointer;
+      margin-top:7px;
     }
   </style>
 </head>
 <body>
-  <!-- Header -->
-  <div class="header">
-    <div class="logo-area">
-      <div class="logo-text">INFINITY</div>
-      <span class="ai-badge">AI Shadow Agent Active</span>
-    </div>
-    <div class="user-info">
-      <div class="user-name">👤 <span id="username"></span></div>
-      <button class="admin-btn" id="admin-toggle" style="display:none;" onclick="toggleAdmin()">Admin</button>
-      <button class="logout-btn" onclick="handleLogout()">Logout</button>
-    </div>
-  </div>
+  <div class="shell">
+    <div class="pill">🚩 Infinity-Vectors · diagnostic page</div>
+    <h1>Infinity-Vectors</h1>
+    <div class="tagline">Use this page to check: “Am I on the right file? Is localStorage being read?”</div>
 
-  <!-- Main Content -->
-  <div class="container">
-    <!-- Welcome Card -->
-    <div class="welcome-card">
-      <h1>Welcome back, <span id="welcome-username"></span>! 🚀</h1>
-      <p class="welcome-subtitle">Your secure Infinity Portal is protected by PewPi AI-to-AI encryption</p>
-
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-label">Total Activities</div>
-          <div class="stat-value" id="total-activities">0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Session Status</div>
-          <div class="stat-value" style="color: var(--success-color);">Active</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Security Level</div>
-          <div class="stat-value">Maximum</div>
-        </div>
-      </div>
+    <div id="warn-block" class="row warn" style="display:none;">
+      <div class="label">Status</div>
+      <div class="val">No Infinity data in localStorage for this origin. You might be on the wrong page / wrong branch / wrong domain.</div>
     </div>
 
-    <!-- Activity Log -->
-    <div class="activity-section">
-      <div class="activity-header">
-        <h2>
-          Activity Timeline
-          <span class="ai-badge">Live Narration</span>
-        </h2>
-        <button class="clear-btn" onclick="clearActivityLog()">Clear History</button>
-      </div>
-
-      <div class="activity-log" id="activity-log">
-        <div class="empty-state">
-          <div class="empty-state-icon">📋</div>
-          <p>No activities yet. Your AI shadow agent will narrate your journey here.</p>
-        </div>
-      </div>
+    <div class="row">
+      <div class="label">Current user (localStorage: <code>infinity_current_user</code>)</div>
+      <div class="val" id="ls-user">—</div>
     </div>
 
-    <!-- Quick Actions -->
-    <div class="quick-actions">
-      <a href="pewpi-about.html" class="action-card">
-        <div class="action-icon">🔐</div>
-        <div class="action-title">PewPi Security</div>
-        <div class="action-desc">Learn about your AI-to-AI encryption protection</div>
-      </a>
-
-      <a href="infinity-portal-unified.html" class="action-card">
-        <div class="action-icon">🌐</div>
-        <div class="action-title">Infinity Portal</div>
-        <div class="action-desc">Access the main unified portal</div>
-      </a>
-
-      <div class="action-card" onclick="testActivity()">
-        <div class="action-icon">⚡</div>
-        <div class="action-title">Test Activity</div>
-        <div class="action-desc">Generate a test activity log entry</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ADMIN PANEL (same page, only for Kris) -->
-  <div id="admin-panel">
-    <div class="admin-title">Infinity Admin · GitHub Writer</div>
-    <div class="admin-note">
-      This panel is only visible to <b>Kris</b>. Values are kept in localStorage on this browser.  
-      Browser → GitHub may require serving this page from localhost / your domain because of CORS.
+    <div class="row">
+      <div class="label">Session token (localStorage: <code>infinity_session_token</code>)</div>
+      <div class="val" id="ls-token">—</div>
     </div>
 
-    <div class="admin-group">
-      <label for="gh-repo">GitHub Repo (owner/repo)</label>
-      <input id="gh-repo" type="text" placeholder="pewpi-infinity/Infinity-Vectors">
+    <div class="row">
+      <div class="label">GitHub admin cfg (localStorage: <code>infinity_admin_github</code>)</div>
+      <div class="val" id="ls-ghcfg">—</div>
     </div>
-    <div class="admin-group">
-      <label for="gh-token">Personal Access Token (PAT)</label>
-      <input id="gh-token" type="password" placeholder="ghp_...">
-    </div>
-    <div class="admin-group">
-      <label for="gh-path">File path inside repo</label>
-      <input id="gh-path" type="text" value="index.html">
-    </div>
-    <div class="admin-group">
-      <label for="gh-message">Commit message</label>
-      <input id="gh-message" type="text" value="Infinity auto-commit from portal">
-    </div>
-    <div class="admin-group">
-      <label for="gh-content">File content to push</label>
-      <textarea id="gh-content" placeholder="Paste your big generated HTML/JS here..."></textarea>
-    </div>
-    <button class="admin-btn-main" onclick="pushToGitHub()">Push to GitHub</button>
-    <div id="gh-status"></div>
 
-    <div class="admin-group" style="margin-top:14px;">
-      <label>Debug / storage</label>
-      <button class="admin-btn-main" style="background:rgba(255,255,255,0.03);" onclick="console.log('localStorage dump', {...localStorage}); alert('Dumped to console');">Dump localStorage</button>
+    <div id="admin-box" class="row">
+      <div class="label">Admin (you are Kris)</div>
+      <div class="val">You should see this box — so admin-protected UI is working on this page.</div>
+      <textarea id="gh-content" placeholder="Paste something to push later..."></textarea>
+      <button onclick="alert('this is just the diagnostic page — pushing code lives in the full portal version');">Push (demo)</button>
     </div>
   </div>
 
   <script>
-    // ========= CONFIG =========
-    const ADMIN_NAME = "kris"; // case-insensitive match for showing admin
-    const LS_USER = "infinity_current_user";
-    const LS_TOKEN = "infinity_session_token";
-    const LS_ACTIVITY = "infinity_activity_log";
-    const LS_ADMIN_GH = "infinity_admin_github";
+    // read LS
+    const user = localStorage.getItem('infinity_current_user');
+    const token = localStorage.getItem('infinity_session_token');
+    const ghcfg = localStorage.getItem('infinity_admin_github');
 
-    // ========== Session Management ==========
-    function checkAuth() {
-      // Your original logic redirected to login.html if there was no session.
-      // To keep you on THIS page while building, we'll create a fake session if missing.
-      let currentUser = localStorage.getItem(LS_USER);
-      let sessionToken = localStorage.getItem(LS_TOKEN);
+    // show
+    document.getElementById('ls-user').textContent = user || '⛔ not set';
+    document.getElementById('ls-token').textContent = token || '⛔ not set';
+    document.getElementById('ls-ghcfg').textContent = ghcfg || '⛔ not set';
 
-      if (!currentUser) {
-        // default to "Guest" but you can change to "Kris" to pop admin
-        currentUser = "Guest";
-        localStorage.setItem(LS_USER, currentUser);
-      }
-      if (!sessionToken) {
-        sessionToken = "infinity_session_" + Date.now();
-        localStorage.setItem(LS_TOKEN, sessionToken);
-      }
-      return currentUser;
+    // if nothing, show warning
+    if (!user && !token && !ghcfg) {
+      document.getElementById('warn-block').style.display = 'block';
     }
 
-    function handleLogout() {
-      const username = localStorage.getItem(LS_USER);
-
-      // Log activity
-      logActivity('user_logout', `User logged out: ${username}`);
-
-      // Clear session
-      localStorage.removeItem(LS_USER);
-      localStorage.removeItem(LS_TOKEN);
-
-      // Reload page to re-init
-      location.reload();
+    // if user is Kris -> show admin box
+    if ((user || '').toLowerCase() === 'kris') {
+      document.getElementById('admin-box').style.display = 'block';
     }
-
-    // ========== Activity Log System ==========
-    function logActivity(action, details) {
-      const logs = JSON.parse(localStorage.getItem(LS_ACTIVITY) || '[]');
-      const username = localStorage.getItem(LS_USER) || 'system';
-
-      logs.push({
-        timestamp: new Date().toISOString(),
-        action: action,
-        details: details,
-        user: username
-      });
-
-      localStorage.setItem(LS_ACTIVITY, JSON.stringify(logs));
-      loadActivityLog();
-    }
-
-    function loadActivityLog() {
-      const logs = JSON.parse(localStorage.getItem(LS_ACTIVITY) || '[]');
-      const logContainer = document.getElementById('activity-log');
-
-      if (logs.length === 0) {
-        logContainer.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">📋</div>
-            <p>No activities yet. Your AI shadow agent will narrate your journey here.</p>
-          </div>
-        `;
-        document.getElementById('total-activities').textContent = '0';
-        return;
-      }
-
-      // Sort by timestamp (newest first)
-      logs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-      // Update stats
-      document.getElementById('total-activities').textContent = logs.length;
-
-      // Generate activity items with AI narration
-      logContainer.innerHTML = logs.map(log => {
-        const time = new Date(log.timestamp);
-        const formattedTime = time.toLocaleString();
-        const narrator = generateNarration(log.action, log.details, log.user);
-
-        return `
-          <div class="activity-item">
-            <div class="activity-time">⏱️ ${formattedTime}</div>
-            <div class="activity-action">${getActionEmoji(log.action)} ${getActionTitle(log.action)}</div>
-            <div class="activity-details">${log.details}</div>
-            <div class="activity-narrator">
-              <strong>AI Shadow Agent:</strong> ${narrator}
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function getActionEmoji(action) {
-      const emojiMap = {
-        'user_registered': '✨',
-        'user_login': '🔓',
-        'user_logout': '🔒',
-        'login_failed': '⚠️',
-        'settings_changed': '⚙️',
-        'test_action': '🧪',
-        'page_view': '👁️'
-      };
-      return emojiMap[action] || '📌';
-    }
-
-    function getActionTitle(action) {
-      const titleMap = {
-        'user_registered': 'New Account Created',
-        'user_login': 'User Login',
-        'user_logout': 'User Logout',
-        'login_failed': 'Login Failed',
-        'settings_changed': 'Settings Updated',
-        'test_action': 'Test Action',
-        'page_view': 'Page Viewed'
-      };
-      return titleMap[action] || 'Activity';
-    }
-
-    function generateNarration(action, details, user) {
-      const narrations = {
-        'user_registered': [
-          `A new soul joins the Infinity network! ${user} has been securely onboarded with PewPi encryption protecting their credentials.`,
-          `Welcome to the future, ${user}! Your identity is now shielded by our dual-AI encryption layers.`,
-          `Registration complete! ${u
+  </script>
+</body>
+</html>
