@@ -138,6 +138,8 @@
       border-radius:13px;
       font-size:11px;
       color:var(--text);
+      margin-top:4px;
+      display:inline-block;
     }
     .top-actions {
       display:flex;
@@ -176,6 +178,7 @@
       display:flex;
       gap:8px;
       align-items:center;
+      flex-wrap:wrap;
     }
     .stats-row {
       display:flex;
@@ -243,6 +246,20 @@
       margin-top:10px;
       font-size:13px;
     }
+    .quick-actions {
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:10px;
+    }
+    .qa-btn {
+      background:rgba(148,163,184,.04);
+      border:1px solid rgba(148,163,184,.05);
+      border-radius:12px;
+      padding:10px 14px;
+      font-size:13px;
+      cursor:pointer;
+    }
     @media (max-width:600px) {
       header.topbar { flex-wrap:wrap; gap:10px; }
       .welcome-title { flex-wrap:wrap; }
@@ -265,8 +282,7 @@
     <input id="pass" class="input" type="password" placeholder="Enter your password" />
 
     <button id="loginBtn" class="btn-primary">SIGN IN SECURELY</button>
-    <div class="small">Don’t have an account? <span style="color:#38bdf8;cursor:pointer;">Create one</span></div>
-    <div class="small" style="margin-top:5px;">(for now: username <b>Kris</b>, password <b>Kris</b>)</div>
+    <div class="small">(for now: username <b>Kris</b>, password <b>Kris</b>)</div>
   </div>
 </div>
 
@@ -275,11 +291,11 @@
   <header class="topbar">
     <div>
       <div class="brand-title">PEWPI · INFINITY</div>
-      <div class="badge-small">AI Shadow Agent · Secure</div>
+      <div class="badge-small" id="adminBadge" style="display:none;">Admin mode</div>
     </div>
     <div class="top-actions">
+      <button class="btn" id="adminToggleBtn">Admin</button>
       <button class="btn-danger" id="logoutBtn">Logout</button>
-      <button class="btn" onclick="document.getElementById('adminPanel').scrollIntoView({behavior:'smooth'})">Admin</button>
     </div>
   </header>
 
@@ -293,7 +309,11 @@
       <div class="stats-row">
         <div class="stat-card">
           <div class="stat-label">TOTAL ACTIVITIES</div>
-          <div class="stat-value" id="activityCount">54</div>
+          <div class="stat-value" id="activityCount">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">INFINITY TOKENS</div>
+          <div class="stat-value" id="tokenCount">0</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">LAST COMMIT</div>
@@ -302,7 +322,18 @@
       </div>
     </div>
 
-    <div class="panel" id="adminPanel">
+    <div class="panel">
+      <h3>Quick Actions (user)</h3>
+      <small>Tap these and watch activities / tokens go up.</small>
+      <div class="quick-actions">
+        <button class="qa-btn" onclick="recordActivity('open:chat')">Open Chat</button>
+        <button class="qa-btn" onclick="recordActivity('open:apps')">Open App Dock</button>
+        <button class="qa-btn" onclick="recordActivity('upload:file')">Upload / Builder</button>
+        <button class="qa-btn" onclick="recordActivity('view:news')">View Feed</button>
+      </div>
+    </div>
+
+    <div class="panel" id="adminPanel" style="display:none;">
       <h3>Infinity Admin</h3>
       <small>Paste your GitHub token & repo info. Then “Push current page → GitHub”.</small>
 
@@ -336,14 +367,14 @@
     <div class="panel">
       <h3>Notes</h3>
       <p style="color:var(--muted);font-size:13px;">
-        You proved the front-end → GitHub write works. From here you can let agents rewrite this same file and push again.
+        Admin toggle hides all the power stuff so you can see what normal users see. Tokens + activities live in localStorage, so the page will remember your counts.
       </p>
     </div>
   </main>
 </div>
 
 <script>
-  // ----- LOGIN -----
+  // ====== LOGIN / SESSION ======
   const loginView = document.getElementById('loginView');
   const appView   = document.getElementById('appView');
   const whoSpan   = document.getElementById('who');
@@ -355,6 +386,7 @@
     appView.style.display = 'block';
     whoSpan.textContent = name || 'Kris';
     localStorage.setItem('pewpiLoggedIn','1');
+    recordActivity('login'); // count it
   }
   function showLogin() {
     appView.style.display = 'none';
@@ -362,7 +394,6 @@
     localStorage.removeItem('pewpiLoggedIn');
   }
 
-  // auto-login if saved
   if (localStorage.getItem('pewpiLoggedIn') === '1') {
     showApp('Kris');
   }
@@ -370,7 +401,6 @@
   loginBtn.onclick = () => {
     const u = document.getElementById('user').value.trim();
     const p = document.getElementById('pass').value.trim();
-    // simple hardcoded gate – you said only you use it
     if ((u === 'Kris' || u === 'kris') && (p === 'Kris' || p === 'kris')) {
       showApp(u || 'Kris');
     } else {
@@ -379,7 +409,59 @@
   };
   logoutBtn.onclick = showLogin;
 
-  // ----- GITHUB PUSH -----
+  // ====== ADMIN TOGGLE ======
+  let adminMode = false;
+  const adminPanel = document.getElementById('adminPanel');
+  const adminBadge = document.getElementById('adminBadge');
+  const adminToggleBtn = document.getElementById('adminToggleBtn');
+
+  function setAdmin(on) {
+    adminMode = on;
+    adminPanel.style.display = on ? 'block' : 'none';
+    adminBadge.style.display = on ? 'inline-block' : 'none';
+    adminToggleBtn.textContent = on ? 'Admin (on)' : 'Admin';
+  }
+  adminToggleBtn.onclick = () => {
+    setAdmin(!adminMode);
+    recordActivity(adminMode ? 'admin:on' : 'admin:off');
+  };
+  // start in user mode
+  setAdmin(false);
+
+  // ====== TOKENS / ACTIVITY ======
+  const actEl = document.getElementById('activityCount');
+  const tokEl = document.getElementById('tokenCount');
+
+  function loadCounts() {
+    const a = parseInt(localStorage.getItem('pewpiActivities') || '0', 10);
+    const t = parseInt(localStorage.getItem('pewpiTokens') || '0', 10);
+    actEl.textContent = a;
+    tokEl.textContent = t;
+  }
+  loadCounts();
+
+  function saveCounts(a, t) {
+    localStorage.setItem('pewpiActivities', String(a));
+    localStorage.setItem('pewpiTokens', String(t));
+  }
+
+  function recordActivity(label) {
+    // console.log('activity:', label);
+    let a = parseInt(localStorage.getItem('pewpiActivities') || '0', 10);
+    a = a + 1;
+    // simple token formula – change anytime
+    const tokens = a * 5;
+    saveCounts(a, tokens);
+    actEl.textContent = a;
+    tokEl.textContent = tokens;
+  }
+
+  // count page open as an activity if logged in
+  if (localStorage.getItem('pewpiLoggedIn') === '1') {
+    recordActivity('visit:portal');
+  }
+
+  // ====== GITHUB PUSH ======
   async function pushToGitHub() {
     const token = document.getElementById('ghToken').value.trim();
     const owner = document.getElementById('ghOwner').value.trim();
@@ -390,7 +472,7 @@
 
     if (!token) { statusEl.textContent = '❗ Token missing.'; return; }
 
-    // Grab whole current page HTML
+    // capture page html
     const html = document.documentElement.outerHTML;
     const content = btoa(unescape(encodeURIComponent(html)));
 
@@ -412,10 +494,7 @@
       console.warn('Could not get existing file sha, will create new.', e);
     }
 
-    const body = {
-      message: msg,
-      content: content
-    };
+    const body = { message: msg, content: content };
     if (sha) body.sha = sha;
 
     try {
@@ -434,16 +513,16 @@
         if (lastCommitEl && data.commit && data.commit.sha) {
           lastCommitEl.textContent = data.commit.sha.slice(0,10);
         }
+        recordActivity('push:github');
       } else {
-        console.log(data);
         statusEl.textContent = '❗ GitHub error: ' + (data.message || 'unknown');
       }
     } catch (err) {
-      console.error(err);
       statusEl.textContent = '❗ Network / fetch error.';
     }
   }
-  document.getElementById('pushBtn').onclick = pushToGitHub;
+  const pushBtn = document.getElementById('pushBtn');
+  if (pushBtn) pushBtn.onclick = pushToGitHub;
 </script>
 
 </body>
