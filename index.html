@@ -6,86 +6,351 @@
   <title>PewPi · Infinity Portal</title>
   <meta name="color-scheme" content="dark"/>
   <style>
-    /* === all your original Infinity-Vectors CSS === */
     :root {
-      --bg: radial-gradient(circle at top,#030816 0%,#01030a 45%,#000 100%);
-      --panel: rgba(2,11,25,.75);
+      --bg: radial-gradient(circle at top, #030816 0%, #01030a 45%, #000 100%);
+      --panel: rgba(2, 11, 25, 0.75);
+      --panel-solid: #020c18;
       --line: #12b5ff;
-      --accent:#5f6fff;
-      --muted:#94a3b8;
-      --text:#dbeafe;
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,sans-serif;
+      --accent: #5f6fff;
+      --muted: #94a3b8;
+      --text: #dbeafe;
+      font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,sans-serif;
     }
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);min-height:100vh;color:var(--text)}
-    .hidden{display:none!important}
-    /* … all your login, dashboard, and admin styling from before … */
+    *{box-sizing:border-box;}
+    body{margin:0;background:var(--bg);min-height:100vh;color:var(--text);}
+    .hidden{display:none!important;}
+
+    /* LOGIN */
+    #loginScreen{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:35px 12px 45px;gap:18px;}
+    .login-card{background:radial-gradient(circle,rgba(4,21,43,.7),rgba(1,3,7,.6));backdrop-filter:blur(14px);border:1px solid rgba(18,181,255,.1);border-top:1px solid rgba(18,181,255,.3);max-width:460px;width:100%;border-radius:20px;padding:22px 19px 26px;box-shadow:0 18px 48px rgba(0,0,0,.28);}
+    .brandTitle{font-size:36px;font-weight:800;letter-spacing:.24em;text-align:center;background:linear-gradient(120deg,#23b0ff,#8a7cff 60%,#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px;}
+    .subtitle-center{text-align:center;color:var(--muted);font-size:14px;margin-bottom:18px;}
+    .badge-inline{display:inline-flex;align-items:center;gap:8px;background:rgba(1,110,146,.32);border:1px solid rgba(2,219,255,.28);color:#e2f3ff;border-radius:999px;padding:6px 13px 6px 10px;font-weight:600;font-size:13px;margin:0 auto 12px;}
+    .form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:11px;}
+    label{font-size:13px;color:var(--muted);font-weight:500;}
+    input{background:rgba(0,0,0,.38);border:1px solid rgba(13,148,136,.25);border-radius:12px;padding:10px 12px;font-size:14.5px;color:var(--text);outline:none;}
+    input:focus{border-color:rgba(18,181,255,.8);box-shadow:0 0 0 1px rgba(18,181,255,.4);}
+    .btn-primary{width:100%;background:linear-gradient(115deg,#47c3ff 0%,#6062ff 70%);border:none;color:#fff;font-weight:700;border-radius:999px;padding:11px 18px;font-size:15px;cursor:pointer;margin-top:10px;box-shadow:0 16px 40px rgba(96,98,255,.35);}
+    .tiny-link{margin-top:12px;text-align:center;font-size:13.5px;color:var(--muted);}
+    .tiny-link button{background:none;border:none;color:#5fd4ff;font-weight:600;cursor:pointer;}
+
+    /* DASHBOARD */
+    #dashboard{min-height:100vh;display:flex;flex-direction:column;}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 14px 13px;background:rgba(3,6,18,.65);border-bottom:1px solid rgba(16,185,232,.1);backdrop-filter:blur(18px);position:sticky;top:0;z-index:18;}
+    .top-left{display:flex;align-items:center;gap:15px;}
+    .logo-main{font-weight:700;letter-spacing:.22em;font-size:22px;background:linear-gradient(112deg,#23b0ff 0%,#b1c7ff 82%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .agent-pill{background:rgba(3,105,161,.12);border:1px solid rgba(45,212,191,.33);border-radius:999px;padding:4px 10px 4px 9px;font-size:12px;display:flex;align-items:center;gap:6px;}
+    .user-controls{display:flex;gap:8px;align-items:center;}
+    .user-name{display:flex;gap:6px;align-items:center;font-weight:600;color:#e2e8f0;}
+    .btn-small{background:rgba(248,113,113,.18);border:1px solid rgba(248,113,113,.28);color:#fff;border-radius:12px;padding:6px 14px 5px;font-size:13px;cursor:pointer;}
+    .btn-admin{background:rgba(15,118,178,.16);border:1px solid rgba(56,189,248,.3);}
+    .content-wrap{display:flex;flex-direction:column;gap:16px;padding:12px 14px 65px;}
+    .hero-card{background:rgba(1,11,21,.68);border:1px solid rgba(18,181,255,.09);border-radius:20px;padding:18px 16px 21px;box-shadow:0 16px 46px rgba(0,0,0,.2);}
+    .hero-title{font-size:22px;font-weight:700;margin-bottom:4px;}
+    .hero-sub{color:var(--muted);font-size:13.5px;margin-bottom:14px;}
+    .hero-stats{display:flex;gap:14px;flex-wrap:wrap;}
+    .stat-box{background:rgba(0,0,0,.14);border:1px solid rgba(18,181,255,.07);border-left:2px solid rgba(82,124,254,.9);border-radius:15px;padding:10px 12px 9px;flex:1 1 120px;min-width:124px;}
+    .stat-label{font-size:12px;color:var(--muted);margin-bottom:4px;}
+    .stat-value{font-size:25px;font-weight:700;letter-spacing:.03em;}
+    .stat-sub{font-size:12px;color:var(--muted);}
+    .three-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:15px;}
+    .portal-card{background:rgba(2,13,26,.42);border:1px solid rgba(148,163,184,.06);border-left:2px solid rgba(110,231,183,.8);border-radius:18px;padding:16px 14px 16px;}
+    .portal-card h3{margin:0 0 5px;font-size:16px;display:flex;gap:8px;align-items:center;}
+    .portal-card p{margin:0;font-size:13px;color:var(--muted);}
+    .portal-card button{margin-top:10px;background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.44);color:white;border-radius:999px;padding:6px 12px 5px;font-size:13px;cursor:pointer;}
+    .timeline-card{background:rgba(1,8,16,.5);border:1px solid rgba(148,163,184,.03);border-radius:20px;padding:16px 14px 16px;}
+    .timeline-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+    .timeline-title{font-size:17px;font-weight:700;}
+    .clear-btn{background:rgba(248,113,113,.1);color:#fca5a5;border:1px solid rgba(248,113,113,.3);border-radius:10px;padding:4px 10px 3px;font-size:12px;cursor:pointer;}
+    .activity-list{display:flex;flex-direction:column;gap:10px;max-height:310px;overflow-y:auto;}
+    .activity-item{background:rgba(2,16,30,.55);border:1px solid rgba(18,181,255,.02);border-radius:16px;padding:8px 10px 7px;display:flex;gap:10px;}
+    .activity-bar{width:4px;border-radius:999px;background:linear-gradient(180deg,#12b5ff 0%,rgba(18,181,255,0) 100%);}
+    .activity-body{flex:1;}
+    .activity-title{font-weight:600;font-size:14px;display:flex;gap:8px;align-items:center;}
+    .activity-meta{font-size:11.5px;color:var(--muted);margin-top:2px;}
+    #adminPanel{background:rgba(3,13,22,.62);border:1px solid rgba(59,130,246,.16);border-radius:16px;padding:14px 14px 14px;margin-top:6px;}
+    .admin-grid{display:grid;grid-template-columns:1fr;gap:10px;}
+    .admin-box{background:rgba(1,5,12,.3);border:1px solid rgba(15,118,178,.2);border-radius:12px;padding:10px 10px 12px;}
+    textarea{width:100%;background:rgba(0,0,0,.22);border:1px solid rgba(59,130,246,.35);border-radius:10px;min-height:90px;padding:7px 8px;color:inherit;}
+    .btn-inline{margin-top:8px;background:rgba(59,130,246,.18);border:1px solid rgba(59,130,246,.42);color:#fff;border-radius:7px;padding:5px 11px 4px;font-size:13px;cursor:pointer;}
+    .status-line{font-size:12px;margin-top:5px;}
+    @media (min-width:930px){.content-wrap{max-width:1180px;margin:0 auto;}.admin-grid{grid-template-columns:2fr 1fr;}}
+
+    /* Rogers */
+    #rogersFab{position:fixed;right:20px;bottom:20px;width:52px;height:52px;border-radius:999px;background:#38bdf8;border:none;box-shadow:0 10px 24px rgba(0,0,0,.35);cursor:pointer;color:#001827;font-weight:900;font-size:20px;z-index:9998;}
+    #rogersPanel{position:fixed;bottom:84px;right:20px;width:340px;background:rgba(1,9,18,.96);border:1px solid rgba(18,181,255,.28);border-radius:16px;padding:10px 12px;color:#e0f2fe;font-size:14px;z-index:9999;display:none;}
   </style>
 </head>
 <body>
-<!-- === Infinity Portal markup exactly as before === -->
-<section id="loginScreen">…</section>
-<section id="dashboard" class="hidden">…</section>
 
-<!-- === Rogers floating panel === -->
-<div id="rogersPanel" style="position:fixed;bottom:20px;right:20px;width:340px;background:rgba(1,9,18,.95);border:1px solid rgba(18,181,255,.3);border-radius:16px;padding:10px 12px;color:#e0f2fe;font-size:14px;z-index:9999;display:none;">
+<!-- LOGIN -->
+<section id="loginScreen">
+  <div class="login-card" id="loginCard">
+    <div class="brandTitle">INFINITY</div>
+    <div class="subtitle-center">SECURE PORTAL ACCESS</div>
+    <div class="badge-inline">🔐 PewPi AI-to-AI Encryption Active</div>
+    <div class="form-group">
+      <label for="loginUser">Username</label>
+      <input id="loginUser" placeholder="Enter your username" autocomplete="username">
+    </div>
+    <div class="form-group">
+      <label for="loginPass">Password</label>
+      <input id="loginPass" type="password" placeholder="Enter your password" autocomplete="current-password">
+    </div>
+    <button class="btn-primary" onclick="login()">SIGN IN SECURELY</button>
+    <div class="tiny-link">Don't have an account? <button onclick="showCreate()">Create one</button></div>
+    <div id="loginMsg" class="tiny-link" style="color:#fca5a5;"></div>
+  </div>
+
+  <div class="login-card hidden" id="createCard">
+    <div class="brandTitle" style="font-size:30px;">Create Account</div>
+    <div class="subtitle-center">Email is collected, no code needed.</div>
+    <div class="form-group">
+      <label for="newUser">Username</label>
+      <input id="newUser" placeholder="Choose a username">
+    </div>
+    <div class="form-group">
+      <label for="newPass">Password</label>
+      <input id="newPass" type="password" placeholder="Choose a password">
+    </div>
+    <div class="form-group">
+      <label for="newEmail">Email</label>
+      <input id="newEmail" type="email" placeholder="name@example.com">
+    </div>
+    <div class="form-group">
+      <label for="newPhone">Phone (optional)</label>
+      <input id="newPhone" placeholder="+1 555 123 4567">
+    </div>
+    <button class="btn-primary" onclick="createAccount()">CREATE &amp; SIGN IN</button>
+    <div class="tiny-link"><button onclick="showLogin()">Back to login</button></div>
+    <div id="createMsg" class="tiny-link" style="color:#fbbf24;"></div>
+  </div>
+</section>
+
+<!-- DASHBOARD -->
+<section id="dashboard" class="hidden">
+  <header class="topbar">
+    <div class="top-left">
+      <div class="logo-main">PEWPI · INFINITY</div>
+      <div class="agent-pill">🤖 AI Shadow Agent Active</div>
+    </div>
+    <div class="user-controls">
+      <div class="user-name" id="userLabel"><span>👤</span> <span id="userNameLbl">User</span></div>
+      <button class="btn-small btn-admin" id="adminBtn" onclick="toggleAdmin()">Admin</button>
+      <button class="btn-small" onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <main class="content-wrap">
+    <div class="hero-card">
+      <div class="hero-title" id="welcomeTitle">Welcome back!</div>
+      <div class="hero-sub">Your Infinity / PewPi session is protected.</div>
+      <div class="hero-stats">
+        <div class="stat-box">
+          <div class="stat-label">TOTAL ACTIVITIES</div>
+          <div class="stat-value" id="actCount">0</div>
+          <div class="stat-sub">Shadow agent is watching (in a good way).</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">TOKEN BALANCE</div>
+          <div class="stat-value" id="tokenCount">0</div>
+          <div class="stat-sub">Earn tokens by doing things.</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">SESSION STATUS</div>
+          <div class="stat-value" style="font-size:20px" id="sessionStatus">Active</div>
+          <div class="stat-sub">Security level: <b id="secLevel">Maximum</b></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="three-grid">
+      <div class="portal-card">
+        <h3>🔐 PewPi Security</h3>
+        <p>Learn about your AI-to-AI encryption protection.</p>
+        <button onclick="logAction('PewPi Security viewed','Security docs opened')">Open</button>
+      </div>
+      <div class="portal-card">
+        <h3>🌐 Infinity Portal</h3>
+        <p>Access the main unified portal components.</p>
+        <button onclick="logAction('Infinity Portal accessed','Portal card clicked')">Launch</button>
+      </div>
+      <div class="portal-card">
+        <h3>⚡ Test Activity</h3>
+        <p>Generate a test activity log entry.</p>
+        <button onclick="logAction('Test activity trigger','Manual test from dashboard')">Trigger</button>
+      </div>
+    </div>
+
+    <div class="timeline-card">
+      <div class="timeline-head">
+        <div class="timeline-title">Activity Timeline <span style="font-size:12px;color:var(--muted);">· Live narration</span></div>
+        <button class="clear-btn" onclick="clearHistory()">Clear History</button>
+      </div>
+      <div class="activity-list" id="activityList"></div>
+    </div>
+
+    <div id="adminPanel" class="hidden">
+      <h3>Infinity Admin · GitHub Connected</h3>
+      <div class="admin-grid">
+        <div class="admin-box">
+          <div class="form-group">
+            <label for="ghToken">GitHub Token (PAT)</label>
+            <input id="ghToken" placeholder="ghp_...">
+          </div>
+          <div class="form-group">
+            <label for="ghOwner">Owner / Username</label>
+            <input id="ghOwner" placeholder="pewpi-infinity">
+          </div>
+          <div class="form-group">
+            <label for="ghRepo">Repo name</label>
+            <input id="ghRepo" placeholder="Infinity-Vectors">
+          </div>
+          <div class="form-group">
+            <label for="ghPath">File path in repo</label>
+            <input id="ghPath" value="index.html">
+          </div>
+          <div class="form-group">
+            <label for="ghMsg">Commit message</label>
+            <input id="ghMsg" value="update from Infinity portal">
+          </div>
+          <button class="btn-inline" onclick="pushToGitHub()">↑ Push current page → GitHub</button>
+          <div id="pushStatus" class="status-line"></div>
+        </div>
+        <div class="admin-box">
+          <h4 style="margin:0 0 6px;font-size:13px;">Raw script drop (local)</h4>
+          <textarea id="customScript" placeholder="Paste long script here — it stays local until you push."></textarea>
+          <button class="btn-inline" onclick="saveAdminScript()">Save local script</button>
+          <div id="scriptStatus" class="status-line"></div>
+          <p style="margin-top:6px;font-size:11px;color:var(--muted);">Then push when you’re ready.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+</section>
+
+<!-- Rogers FAB and Panel -->
+<button id="rogersFab" title="Rogers (Alt+R)">R</button>
+<div id="rogersPanel">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
     <strong>🎙 Rogers AI</strong>
     <button id="rogersClose" style="background:none;border:none;color:#38bdf8;font-size:18px;cursor:pointer;">×</button>
   </div>
   <div id="rogersOut" style="max-height:160px;overflow-y:auto;margin-bottom:6px;font-size:13.5px;color:#cbd5e1;"></div>
-  <textarea id="rogersIn" placeholder="Ask Infinity…" style="width:100%;border-radius:8px;padding:6px;font-size:13px;color:black;"></textarea>
+  <textarea id="rogersIn" placeholder="Ask Infinity..." style="width:100%;border-radius:8px;padding:6px;font-size:13px;color:black;"></textarea>
   <button id="rogersSend" style="margin-top:6px;background:#38bdf8;border:none;color:white;padding:5px 10px;border-radius:8px;">Send</button>
 </div>
 
 <script>
-/* === all your previous JS logic (users, login, dashboard, admin, etc.) === */
-/* place this Rogers add-on at the very bottom so nothing breaks */
+  /* ====== App State / Storage ====== */
+  const USERS_KEY = 'infinity_users_v2';
+  const SESSION_KEY = 'infinity_session_v1';
+  const ADMIN_SCRIPT_KEY = 'infinity_custom_script_v1';
 
-(async ()=>{
-  const panel = document.getElementById('rogersPanel');
-  const out   = document.getElementById('rogersOut');
-  const input = document.getElementById('rogersIn');
-  const close = document.getElementById('rogersClose');
-  const sendB = document.getElementById('rogersSend');
+  function nowStamp(){ return new Date().toLocaleString(); }
 
-  function toggle(show){ panel.style.display = show ? 'block':'none'; }
-  close.onclick = ()=>toggle(false);
-  document.addEventListener('keydown',e=>{
-    if(e.altKey && e.key.toLowerCase()==='r')
-      toggle(panel.style.display==='none');
-  });
-
-  async function send(msg){
-    out.insertAdjacentHTML('beforeend',`<div><b>You:</b> ${msg}</div>`);
-    input.value='';
-    try{
-      // call your local proxy (Flask) so key is hidden
-      const r = await fetch("http://localhost:5000/genai",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({prompt:msg})
-      });
-      if(!r.ok){
-        out.insertAdjacentHTML('beforeend',
-          `<div style="color:#fca5a5;">HTTP ${r.status}</div>`);
-        return;
-      }
-      const j = await r.json();
-      const reply = j?.candidates?.[0]?.content?.parts?.[0]?.text || "(no reply)";
-      out.insertAdjacentHTML('beforeend',
-        `<div style="color:#93c5fd;"><b>Rogers:</b> ${reply}</div>`);
-      out.scrollTop = out.scrollHeight;
-      const u = new SpeechSynthesisUtterance(reply);
-      u.voice = speechSynthesis.getVoices()[0];
-      speechSynthesis.speak(u);
-    }catch(e){
-      out.insertAdjacentHTML('beforeend',
-        `<div style="color:#fca5a5;">Error: ${e.message}</div>`);
+  function loadUsers(){
+    const raw = localStorage.getItem(USERS_KEY);
+    if (raw){
+      try { return JSON.parse(raw); } catch(e){}
     }
+    const seed = [
+      { username:'Kris',  password:'Kris',  email:'kris@example.com',  phone:'', isAdmin:true,  tokens:54, activities:[] },
+      { username:'Chris', password:'Chris', email:'chris@example.com', phone:'', isAdmin:false, tokens:5,  activities:[] }
+    ];
+    localStorage.setItem(USERS_KEY, JSON.stringify(seed));
+    return seed;
   }
-  sendB.onclick = ()=>{ const m=input.value.trim(); if(m) send(m); };
-})();
-</script>
-</body>
-</html>
+  function saveUsers(arr){ localStorage.setItem(USERS_KEY, JSON.stringify(arr)); }
+  function getSession(){ try{ return JSON.parse(localStorage.getItem(SESSION_KEY)||'null'); }catch(e){ return null; } }
+  function setSession(obj){ localStorage.setItem(SESSION_KEY, JSON.stringify(obj)); }
+
+  /* ====== Auth UI ====== */
+  function showCreate(){
+    document.getElementById('loginCard').classList.add('hidden');
+    document.getElementById('createCard').classList.remove('hidden');
+  }
+  function showLogin(){
+    document.getElementById('createCard').classList.add('hidden');
+    document.getElementById('loginCard').classList.remove('hidden');
+  }
+  function login(){
+    const u = document.getElementById('loginUser').value.trim();
+    const p = document.getElementById('loginPass').value.trim();
+    const msg = document.getElementById('loginMsg');
+    msg.textContent = '';
+    const users = loadUsers();
+    const found = users.find(x => x.username.toLowerCase() === u.toLowerCase() && x.password === p);
+    if (!found){
+      msg.textContent = 'Bad username or password. Try Kris / Kris or Chris / Chris.';
+      return;
+    }
+    setSession({ username: found.username });
+    showDashboard(found.username);
+  }
+  function createAccount(){
+    const u = document.getElementById('newUser').value.trim();
+    const p = document.getElementById('newPass').value.trim();
+    const em = document.getElementById('newEmail').value.trim();
+    const ph = document.getElementById('newPhone').value.trim();
+    const msg = document.getElementById('createMsg');
+    msg.textContent = '';
+    if (!u || !p){ msg.textContent = 'Username and password required.'; return; }
+    if (em && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){ msg.textContent = 'Email does not look valid.'; return; }
+    const users = loadUsers();
+    if (users.find(x => x.username.toLowerCase() === u.toLowerCase())){ msg.textContent = 'Username already exists.'; return; }
+    users.push({ username:u, password:p, email:em, phone:ph, isAdmin:false, tokens:0, activities:[] });
+    saveUsers(users);
+    setSession({ username: u });
+    showDashboard(u);
+  }
+
+  /* ====== Dashboard / Admin ====== */
+  function showDashboard(username){
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('hidden');
+    document.getElementById('userNameLbl').textContent = username;
+    document.getElementById('welcomeTitle').textContent = 'Welcome back, ' + username + '!';
+    const users = loadUsers();
+    const me = users.find(x => x.username === username);
+    const isAdmin = me && me.isAdmin;
+    document.getElementById('adminBtn').style.display = isAdmin ? 'inline-block' : 'none';
+    if (!isAdmin) document.getElementById('adminPanel').classList.add('hidden');
+    renderTimeline(me);
+    document.getElementById('actCount').textContent = (me.activities || []).length;
+    document.getElementById('tokenCount').textContent = me.tokens || 0;
+    const savedScript = localStorage.getItem(ADMIN_SCRIPT_KEY) || '';
+    const scriptArea = document.getElementById('customScript');
+    if (scriptArea) scriptArea.value = savedScript;
+    logAction('Page Viewed','Dashboard accessed by ' + username,0);
+  }
+  function toggleAdmin(){
+    const panel = document.getElementById('adminPanel');
+    panel.classList.toggle('hidden');
+  }
+  function renderTimeline(userObj){
+    const list = document.getElementById('activityList');
+    list.innerHTML = '';
+    if (!userObj || !userObj.activities) return;
+    userObj.activities.slice().reverse().forEach(entry => {
+      const div = document.createElement('div');
+      div.className = 'activity-item';
+      div.innerHTML = `
+        <div class="activity-bar"></div>
+        <div class="activity-body">
+          <div class="activity-title">${entry.title} ${entry.tokens&&entry.tokens>0 ? '<span style="color:#bef264;font-size:11px;">+'+entry.tokens+' IT</span>' : ''}</div>
+          <div class="activity-meta">${entry.desc}</div>
+          <div class="activity-meta">${entry.time}</div>
+        </div>`;
+      list.appendChild(div);
+    });
+  }
+  function logAction(title, desc, tokenDelta=1){
+    const sess = getSession(); if (!sess) return;
+    const users = loadUsers();
+    const idx = users.findIndex(x => x.username === sess.username);
+    if (idx === -1) return;
+    const user = users[idx];
+    if (!user.activities) user.activities = [];
+    user.activities.push({ title, desc, time: nowStamp(), tokens: tokenDelta });
+    user
