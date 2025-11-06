@@ -1,270 +1,590 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Infinity · PewPi Portal</title>
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Infinity Portal · PewPi</title>
   <style>
     :root {
-      --bg: #0a0e1a;
-      --panel: #141827;
-      --card: #1a1f35;
-      --accent: #00d4ff;
-      --accent2: #7b2cbf;
-      --text: #eef3ff;
-      --muted: #8b95a8;
+      --bg-dark: #0a0e1a;
+      --bg-panel: #141827;
+      --bg-card: #1a1f35;
+      --accent-primary: #00d4ff;
+      --accent-secondary: #7b2cbf;
+      --text-primary: #e9ecef;
+      --text-muted: #8b95a8;
+      --danger: #f43f5e;
     }
     *{box-sizing:border-box;margin:0;padding:0}
     body{
-      background:linear-gradient(135deg,#0a0e1a 0%,#1a1f35 100%);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      color:var(--text);
+      font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+      background:linear-gradient(135deg,#0a0e1a,#1a1f35);
+      color:var(--text-primary);
       min-height:100vh;
     }
-    header{
-      background:var(--panel);
-      padding:14px 20px;
+    .header{
+      background:var(--bg-panel);
+      border-bottom:1px solid rgba(0,212,255,.2);
+      padding:16px 20px;
       display:flex;
       justify-content:space-between;
       align-items:center;
-      border-bottom:1px solid rgba(0,212,255,.25);
       position:sticky;top:0;z-index:10;
     }
     .logo{
+      font-size:26px;
       font-weight:800;
-      letter-spacing:2px;
-      font-size:20px;
-      background:linear-gradient(135deg,var(--accent),#fff);
+      background:linear-gradient(135deg,var(--accent-primary),#fff);
       -webkit-background-clip:text;
       -webkit-text-fill-color:transparent;
     }
-    .container{max-width:1200px;margin:20px auto;padding:0 14px;}
-    .card{
-      background:var(--panel);
-      border:1px solid rgba(0,212,255,0.18);
-      border-radius:16px;
-      padding:20px;
-      margin-bottom:20px;
-      box-shadow:0 20px 50px rgba(0,0,0,.35);
+    .ai-badge{
+      background:rgba(0,212,255,.12);
+      border:1px solid rgba(0,212,255,.3);
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:12px;
     }
-    .title{font-size:24px;margin-bottom:6px;}
-    .muted{color:var(--muted);font-size:14px}
-    /* login */
-    #login-box{
-      max-width:420px;margin:50px auto;
-      background:var(--panel);
-      padding:26px;
-      border-radius:18px;
-      border:1px solid rgba(0,212,255,0.2);
-      box-shadow:0 15px 40px rgba(0,0,0,0.4);
-    }
-    #login-box h1{margin-bottom:14px;}
-    .input-row{margin-bottom:14px;}
-    .input-row label{display:block;margin-bottom:5px;font-size:13px;color:var(--muted);}
-    .input-row input{
-      width:100%;padding:10px 12px;border-radius:10px;
-      border:1px solid rgba(255,255,255,.07);
-      background:#0f1321;color:#fff;
-    }
+    .user-area{display:flex;gap:12px;align-items:center}
     .btn{
-      background:linear-gradient(135deg,var(--accent),var(--accent2));
-      border:none;color:#fff;padding:10px 14px;border-radius:10px;
-      font-weight:600;cursor:pointer;
+      background:rgba(0,212,255,.1);
+      border:1px solid rgba(0,212,255,.4);
+      color:var(--text-primary);
+      border-radius:7px;
+      padding:6px 14px;
+      cursor:pointer;
+      font-weight:600;
     }
-    .dash-grid{
-      display:grid;gap:16px;
-      grid-template-columns:2fr 1fr;
+    .container{max-width:1100px;margin:0 auto;padding:24px 16px 70px}
+    .welcome{
+      background:var(--bg-panel);
+      border:1px solid rgba(0,212,255,.2);
+      border-radius:20px;
+      padding:28px;
+      margin-bottom:24px;
+      box-shadow:0 0 25px rgba(0,212,255,.08);
     }
-    #activity-log{max-height:360px;overflow-y:auto;margin-top:14px;}
-    .activity-item{
-      background:rgba(0,212,255,.03);
-      border-left:3px solid var(--accent);
-      padding:10px 14px;
-      border-radius:8px;
+    .welcome h1{font-size:32px;margin-bottom:7px}
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:20px}
+    .stat{background:rgba(0,0,0,.2);border:1px solid rgba(0,212,255,.08);border-radius:14px;padding:14px}
+    .stat-label{font-size:11px;text-transform:uppercase;color:var(--text-muted);letter-spacing:.4px}
+    .stat-value{font-size:26px;font-weight:700;margin-top:4px;color:var(--accent-primary)}
+    .panel{
+      background:var(--bg-panel);
+      border:1px solid rgba(0,212,255,.15);
+      border-radius:18px;
+      padding:20px;
+      margin-bottom:24px;
+    }
+    .panel-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+    .log-list{max-height:360px;overflow:auto}
+    .log-item{
+      background:rgba(0,0,0,.25);
+      border-left:3px solid var(--accent-primary);
+      border-radius:10px;
+      padding:10px 12px;
       margin-bottom:10px;
     }
+    .log-time{font-size:11px;color:var(--text-muted)}
+    .log-action{font-weight:600}
+    /* login overlay */
+    .login-overlay{
+      position:fixed;inset:0;
+      background:rgba(4,6,10,.92);
+      display:flex;align-items:center;justify-content:center;
+      z-index:999;
+    }
+    .login-box{
+      background:var(--bg-panel);
+      border:1px solid rgba(0,212,255,.3);
+      border-radius:18px;
+      padding:26px 22px;
+      width:min(92vw,380px);
+      text-align:center;
+    }
+    .login-box h2{margin-bottom:4px}
+    .login-box p{color:var(--text-muted);margin-bottom:14px}
+    .field{margin-bottom:13px;text-align:left}
+    .field label{font-size:13px;display:block;margin-bottom:4px}
+    .field input{
+      width:100%;padding:8px 10px;border-radius:8px;border:1px solid rgba(0,212,255,.25);
+      background:rgba(0,0,0,.2);color:var(--text-primary);
+    }
     /* admin panel */
-    #admin-panel{
-      margin-top:20px;
-      background:#0f1321;
-      border:1px solid rgba(255,255,255,0.06);
-      border-radius:12px;
+    .admin-btn{display:none;}
+    .admin-panel{
+      position:fixed;right:16px;bottom:16px;
+      width:min(95vw,360px);
+      background:#0b1020;
+      border:1px solid rgba(0,212,255,.3);
+      border-radius:16px;
+      box-shadow:0 20px 60px rgba(0,0,0,.3);
       padding:14px;
       display:none;
+      z-index:998;
     }
-    #admin-panel h3{margin-bottom:10px;}
-    #admin-panel input{
-      width:100%;padding:8px 10px;border-radius:8px;
-      border:1px solid rgba(255,255,255,.05);background:#0a0d17;color:#fff;
-      margin-bottom:8px;
+    .admin-panel h3{margin-bottom:8px}
+    .admin-panel small{color:var(--text-muted);font-size:11px}
+    .admin-panel .row{margin-bottom:8px}
+    .admin-panel input, .admin-panel textarea{
+      width:100%;background:rgba(255,255,255,.02);border:1px solid rgba(0,212,255,.25);color:#fff;border-radius:6px;padding:6px 8px;font-size:13px;
     }
-    #admin-status{margin-top:6px;font-size:13px;}
-    @media(max-width:850px){
-      .dash-grid{grid-template-columns:1fr;}
+    .admin-panel textarea{min-height:90px;resize:vertical}
+    .danger{background:rgba(244,63,94,.12);border:1px solid rgba(244,63,94,.4);color:#fff}
+    @media(max-width:700px){
+      .header{flex-wrap:wrap;gap:8px}
+      .welcome h1{font-size:26px}
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="logo">INFINITY · PEWPI</div>
-    <div id="top-user" class="muted"></div>
-  </header>
-
-  <!-- LOGIN SCREEN -->
-  <div id="login-box" style="display:none;">
-    <h1>Infinity Login</h1>
-    <p class="muted" style="margin-bottom:14px;">PewPi AI-to-AI encrypted portal</p>
-    <div class="input-row">
-      <label>Username</label>
-      <input id="login-username" placeholder="Kris"/>
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <div class="logo">PEWPI · INFINITY</div>
+      <div class="ai-badge">AI Shadow Agent · Secure</div>
     </div>
-    <div class="input-row">
-      <label>Password</label>
-      <input id="login-password" type="password" placeholder="anything for now"/>
+    <div class="user-area">
+      <span id="top-username">Kris</span>
+      <button class="btn danger" id="logout-btn">Logout</button>
+      <button class="btn admin-btn" id="open-admin" style="display: inline-block;">Admin</button>
     </div>
-    <button class="btn" onclick="doLogin()">Enter Portal</button>
-    <div id="login-status" class="muted" style="margin-top:10px;"></div>
   </div>
-
-  <!-- DASHBOARD -->
-  <div class="container" id="dashboard" style="display:none;">
-    <div class="card">
-      <div class="title">Welcome back, <span id="dash-user"></span> 🚀</div>
-      <div class="muted">Your Infinity Portal is active. AI shadow agent is logging events.</div>
+  <!-- MAIN -->
+  <div class="container" id="main-ui" style="display: block;">
+    <div class="welcome">
+      <h1>Welcome back, <span id="welcome-name">Kris</span> 🔐</h1>
+      <p>Your Infinity / PewPi session is protected.</p>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Total activities</div>
+          <div class="stat-value" id="stat-total">53</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Session status</div>
+          <div class="stat-value" style="color:#22c55e">Active</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Security level</div>
+          <div class="stat-value">MAX</div>
+        </div>
+      </div>
     </div>
-
-    <div class="dash-grid">
-      <div class="card">
+    <div class="panel">
+      <div class="panel-title">
         <h2>Activity timeline</h2>
-        <button class="btn" style="margin-top:8px;" onclick="testActivity()">Add test activity</button>
-        <div id="activity-log"></div>
+        <button class="btn danger" id="clear-log">Clear</button>
       </div>
-      <div>
-        <div class="card">
-          <h2>Session Stats</h2>
-          <p class="muted">Total activities: <span id="activity-count">0</span></p>
-          <p class="muted">Security level: Maximum</p>
-          <p class="muted">Portal: PEWPI Infinity Vectors</p>
-        </div>
-        <div id="admin-panel">
-          <h3>Admin: push this page to GitHub</h3>
-          <input id="gh-owner" placeholder="GitHub owner / username (e.g. Pewpi-infinity)"/>
-          <input id="gh-repo" placeholder="Repo name (e.g. Infinity-Vectors)"/>
-          <input id="gh-path" value="index.html" placeholder="Path (index.html)"/>
-          <input id="gh-msg" value="update from portal" placeholder="Commit message"/>
-          <button class="btn" id="push-btn">Push to GitHub</button>
-          <div id="admin-status" class="muted"></div>
-        </div>
-      </div>
+      <div class="log-list" id="log-list"><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">user_registered</div>
+          <div style="font-size:12px;color:var(--text-muted);">New user account created: Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">login_failed</div>
+          <div style="font-size:12px;color:var(--text-muted);">Failed login attempt for user: Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">login_failed</div>
+          <div style="font-size:12px;color:var(--text-muted);">Failed login attempt for user: Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">user_login</div>
+          <div style="font-size:12px;color:var(--text-muted);">User successfully logged in: Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">page_view</div>
+          <div style="font-size:12px;color:var(--text-muted);">Dashboard accessed by Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">user_logout</div>
+          <div style="font-size:12px;color:var(--text-muted);">User logged out: Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">login_failed</div>
+          <div style="font-size:12px;color:var(--text-muted);">Failed login attempt for user: Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">user_logout</div>
+          <div style="font-size:12px;color:var(--text-muted);">User logged out: null</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">login_failed</div>
+          <div style="font-size:12px;color:var(--text-muted);">Failed login attempt for user: Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">user_login</div>
+          <div style="font-size:12px;color:var(--text-muted);">User logged in via single-file vector build</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">page_view</div>
+          <div style="font-size:12px;color:var(--text-muted);">Vector single-file portal viewed</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">page_view</div>
+          <div style="font-size:12px;color:var(--text-muted);">Vector single-file portal viewed</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">user_logout</div>
+          <div style="font-size:12px;color:var(--text-muted);">User logged out: freedom*7777</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">user_login</div>
+          <div style="font-size:12px;color:var(--text-muted);">User logged in via single-file vector build</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">page_view</div>
+          <div style="font-size:12px;color:var(--text-muted);">Vector single-file portal viewed</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">page_view</div>
+          <div style="font-size:12px;color:var(--text-muted);">Vector single-file portal viewed</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">page_view</div>
+          <div style="font-size:12px;color:var(--text-muted);">Vector single-file portal viewed</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">page_view</div>
+          <div style="font-size:12px;color:var(--text-muted);">Vector single-file portal viewed</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">page_view</div>
+          <div style="font-size:12px;color:var(--text-muted);">Vector single-file portal viewed</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">open_deployed_portal</div>
+          <div style="font-size:12px;color:var(--text-muted);">User opened https://pewpi-infinity.github.io/infinity-portal/login.html</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">page_view</div>
+          <div style="font-size:12px;color:var(--text-muted);">Dashboard accessed by Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">page_view</div>
+          <div style="font-size:12px;color:var(--text-muted);">Dashboard accessed by Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">page_view</div>
+          <div style="font-size:12px;color:var(--text-muted);">Dashboard accessed by Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">page_view</div>
+          <div style="font-size:12px;color:var(--text-muted);">Dashboard accessed by Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">user_logout</div>
+          <div style="font-size:12px;color:var(--text-muted);">User logged out: Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">login_failed</div>
+          <div style="font-size:12px;color:var(--text-muted);">Failed login attempt for user: Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">login_failed</div>
+          <div style="font-size:12px;color:var(--text-muted);">Failed login attempt for user: Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">login_failed</div>
+          <div style="font-size:12px;color:var(--text-muted);">Failed login attempt for user: Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">login_failed</div>
+          <div style="font-size:12px;color:var(--text-muted);">Failed login attempt for user: Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">login_failed</div>
+          <div style="font-size:12px;color:var(--text-muted);">Failed login attempt for user: Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">login_failed</div>
+          <div style="font-size:12px;color:var(--text-muted);">Failed login attempt for user: Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">user_login</div>
+          <div style="font-size:12px;color:var(--text-muted);">User successfully logged in: Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">page_view</div>
+          <div style="font-size:12px;color:var(--text-muted);">Dashboard accessed by Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">page_view</div>
+          <div style="font-size:12px;color:var(--text-muted);">Dashboard accessed by Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">user_logout</div>
+          <div style="font-size:12px;color:var(--text-muted);">User logged out: Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">user_login</div>
+          <div style="font-size:12px;color:var(--text-muted);">User successfully logged in: Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">page_view</div>
+          <div style="font-size:12px;color:var(--text-muted);">Dashboard accessed by Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">page_view</div>
+          <div style="font-size:12px;color:var(--text-muted);">Dashboard accessed by Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">page_view</div>
+          <div style="font-size:12px;color:var(--text-muted);">Dashboard accessed by Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">page_view</div>
+          <div style="font-size:12px;color:var(--text-muted);">Dashboard accessed by Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">page_view</div>
+          <div style="font-size:12px;color:var(--text-muted);">Dashboard accessed by Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">page_view</div>
+          <div style="font-size:12px;color:var(--text-muted);">Dashboard accessed by Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">user_logout</div>
+          <div style="font-size:12px;color:var(--text-muted);">User logged out: Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">user_login</div>
+          <div style="font-size:12px;color:var(--text-muted);">User successfully logged in: Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">page_view</div>
+          <div style="font-size:12px;color:var(--text-muted);">Dashboard accessed by Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">page_view</div>
+          <div style="font-size:12px;color:var(--text-muted);">Dashboard accessed by Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">user_logout</div>
+          <div style="font-size:12px;color:var(--text-muted);">User logged out: Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">user_login</div>
+          <div style="font-size:12px;color:var(--text-muted);">User successfully logged in: Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">page_view</div>
+          <div style="font-size:12px;color:var(--text-muted);">Dashboard accessed by Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">page_view</div>
+          <div style="font-size:12px;color:var(--text-muted);">Dashboard accessed by Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">page_view</div>
+          <div style="font-size:12px;color:var(--text-muted);">Dashboard accessed by Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">page_view</div>
+          <div style="font-size:12px;color:var(--text-muted);">Dashboard accessed by Kris</div>
+        </div><div class="log-item">
+          <div class="log-time">Invalid Date</div>
+          <div class="log-action">admin_update</div>
+          <div style="font-size:12px;color:var(--text-muted);">Admin saved GitHub settings.</div>
+        </div></div>
     </div>
   </div>
-
-<script>
-/* ===== AUTH + UI ===== */
-function showLogin(){
-  document.getElementById('login-box').style.display='block';
-  document.getElementById('dashboard').style.display='none';
-}
-function showDash(user){
-  document.getElementById('login-box').style.display='none';
-  document.getElementById('dashboard').style.display='block';
-  document.getElementById('dash-user').textContent = user;
-  document.getElementById('top-user').textContent = '👤 ' + user;
-  loadActivity();
-  if(user.toLowerCase()==='kris'){
-    document.getElementById('admin-panel').style.display='block';
-  }
-}
-function checkAuth(){
-  const u = localStorage.getItem('infinity_current_user');
-  if(u){ showDash(u); } else { showLogin(); }
-}
-function doLogin(){
-  const u = document.getElementById('login-username').value.trim();
-  const p = document.getElementById('login-password').value.trim();
-  // for now any password, but we log it
-  if(!u){ document.getElementById('login-status').textContent='Enter a username'; return; }
-  localStorage.setItem('infinity_current_user', u);
-  localStorage.setItem('infinity_session_token', 'local-'+Date.now());
-  logActivity('user_login', 'User logged in: '+u);
-  showDash(u);
-}
-/* ===== ACTIVITY ===== */
-function logActivity(action, details){
-  const logs = JSON.parse(localStorage.getItem('infinity_activity_log') || '[]');
-  logs.push({
-    ts: new Date().toISOString(),
-    action, details
-  });
-  localStorage.setItem('infinity_activity_log', JSON.stringify(logs));
-  loadActivity();
-}
-function loadActivity(){
-  const logs = JSON.parse(localStorage.getItem('infinity_activity_log') || '[]').reverse();
-  const box = document.getElementById('activity-log');
-  if(!box) return;
-  if(logs.length===0){
-    box.innerHTML = '<p class="muted">No activity yet.</p>';
-  } else {
-    box.innerHTML = logs.map(l => `
-      <div class="activity-item">
-        <div class="muted">${new Date(l.ts).toLocaleString()}</div>
-        <div><strong>${l.action}</strong></div>
-        <div class="muted">${l.details}</div>
+  <!-- LOGIN OVERLAY -->
+  <div class="login-overlay" id="login-layer" style="display: none;">
+    <div class="login-box">
+      <h2>PewPi / Infinity Login</h2>
+      <p>Enter your Infinity name. Use <b>Kris</b> to unlock admin.</p>
+      <div class="field">
+        <label>Username</label>
+        <input id="login-name" placeholder="e.g. Kris">
       </div>
-    `).join('');
-  }
-  document.getElementById('activity-count').textContent = logs.length;
-}
-function testActivity(){
-  const u = localStorage.getItem('infinity_current_user') || 'user';
-  logActivity('test_action', 'Test entry from '+u);
-}
-/* ===== PUSH TO GITHUB via LOCAL BACKEND ===== */
-async function pushToGitHub(){
-  const status = document.getElementById('admin-status');
-  status.style.color = '#8b95a8';
-  status.textContent = 'Contacting local backend...';
+      <div class="field">
+        <label>Password (anything for now)</label>
+        <input id="login-pass" type="password" placeholder="••••••">
+      </div>
+      <button class="btn" id="do-login" style="width:100%;margin-top:4px;">Login</button>
+    </div>
+  </div>
+  <!-- ADMIN PANEL -->
+  <div class="admin-panel" id="admin-panel" style="display: block;">
+    <h3>Infinity Admin</h3>
+    <small>Paste your GitHub token &amp; repo info. Then “Push current page → GitHub”.</small>
+    <div class="row">
+      <label style="font-size:12px;">GitHub Token</label>
+      <input type="password" id="gh-token" placeholder="ghp_...">
+    </div>
+    <div class="row">
+      <label style="font-size:12px;">Owner / Username</label>
+      <input id="gh-owner" value="Pewpi-infinity">
+    </div>
+    <div class="row">
+      <label style="font-size:12px;">Repo name</label>
+      <input id="gh-repo" value="Infinity-Vectors">
+    </div>
+    <div class="row">
+      <label style="font-size:12px;">File path in repo</label>
+      <input id="gh-path" value="index.html">
+    </div>
+    <div class="row">
+      <label style="font-size:12px;">Commit message</label>
+      <input id="gh-msg" value="update from Infinity portal">
+    </div>
+    <button class="btn" id="push-btn" style="width:100%;margin-top:6px;">⬆ Push current page → GitHub</button>
+    <p id="admin-status" style="margin-top:8px;font-size:12px;color:var(--text-muted);">Preparing...</p>
+  </div>
 
-  const owner = document.getElementById('gh-owner').value.trim();
-  const repo  = document.getElementById('gh-repo').value.trim();
-  const path  = document.getElementById('gh-path').value.trim() || 'index.html';
-  const msg   = document.getElementById('gh-msg').value.trim() || 'update from portal';
+  <script>
+    // --- basics ---
+    const loginLayer = document.getElementById('login-layer');
+    const mainUI = document.getElementById('main-ui');
+    const topUser = document.getElementById('top-username');
+    const welcomeName = document.getElementById('welcome-name');
+    const logList = document.getElementById('log-list');
+    const statTotal = document.getElementById('stat-total');
+    const adminBtn = document.getElementById('open-admin');
+    const adminPanel = document.getElementById('admin-panel');
 
-  if(!owner || !repo){
-    status.style.color = 'tomato';
-    status.textContent = 'Enter owner and repo first.';
-    return;
-  }
-
-  const html = document.documentElement.outerHTML;
-  try{
-    const res = await fetch('http://127.0.0.1:5000/push', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        owner, repo, path, message: msg, content: html
-      })
-    });
-    const data = await res.json();
-    if(data.ok){
-      status.style.color = '#22c55e';
-      status.textContent = 'Pushed ✅';
-      logActivity('github_push', `Pushed ${path} to ${owner}/${repo}`);
-    } else {
-      status.style.color = 'tomato';
-      status.textContent = 'GitHub error: ' + (data.error || (data.github && data.github.message) || data.status);
+    function loadLogs() {
+      const logs = JSON.parse(localStorage.getItem('infinity_activity_log') || '[]').sort((a,b)=>b.time-a.time);
+      logList.innerHTML = '';
+      logs.forEach(l => {
+        const d = document.createElement('div');
+        d.className = 'log-item';
+        d.innerHTML = `
+          <div class="log-time">${new Date(l.time).toLocaleString()}</div>
+          <div class="log-action">${l.action}</div>
+          <div style="font-size:12px;color:var(--text-muted);">${l.details}</div>
+        `;
+        logList.appendChild(d);
+      });
+      statTotal.textContent = logs.length;
     }
-  }catch(e){
-    status.style.color = 'tomato';
-    status.textContent = 'Could not reach http://127.0.0.1:5000/push. Make sure Termux server.py is running.';
-  }
-}
-document.addEventListener('DOMContentLoaded', () => {
-  checkAuth();
-  const btn = document.getElementById('push-btn');
-  if(btn) btn.addEventListener('click', pushToGitHub);
-});
-</script>
-</body>
-</html>
+    function addLog(action,details){
+      const logs = JSON.parse(localStorage.getItem('infinity_activity_log') || '[]');
+      logs.push({time:Date.now(),action,details});
+      localStorage.setItem('infinity_activity_log', JSON.stringify(logs));
+      loadLogs();
+    }
+
+    function showAdminIfKris(name){
+      if(name && name.toLowerCase()==='kris'){
+        adminBtn.style.display='inline-block';
+      } else {
+        adminBtn.style.display='none';
+      }
+    }
+
+    // init auth
+    const storedUser = localStorage.getItem('infinity_current_user');
+    if (storedUser){
+      loginLayer.style.display='none';
+      mainUI.style.display='block';
+      topUser.textContent = storedUser;
+      welcomeName.textContent = storedUser;
+      showAdminIfKris(storedUser);
+      loadLogs();
+    }
+
+    document.getElementById('do-login').onclick = () => {
+      const name = document.getElementById('login-name').value.trim();
+      const pass = document.getElementById('login-pass').value.trim();
+      if(!name){ alert('enter name'); return; }
+      // save session
+      localStorage.setItem('infinity_current_user', name);
+      localStorage.setItem('infinity_session_token', 'session-'+Date.now());
+      loginLayer.style.display='none';
+      mainUI.style.display='block';
+      topUser.textContent = name;
+      welcomeName.textContent = name;
+      showAdminIfKris(name);
+      addLog('user_login', `User ${name} logged in`);
+    };
+
+    document.getElementById('logout-btn').onclick = () => {
+      const u = localStorage.getItem('infinity_current_user') || 'user';
+      addLog('user_logout', u + ' logged out');
+      localStorage.removeItem('infinity_current_user');
+      localStorage.removeItem('infinity_session_token');
+      loginLayer.style.display='flex';
+      mainUI.style.display='none';
+      topUser.textContent = 'Not signed in';
+    };
+
+    document.getElementById('clear-log').onclick = () => {
+      localStorage.setItem('infinity_activity_log','[]');
+      loadLogs();
+    };
+
+    // admin toggle
+    adminBtn.onclick = () => {
+      adminPanel.style.display = (adminPanel.style.display==='block') ? 'none':'block';
+    };
+
+    // ========== GITHUB PUSH ==========
+    async function pushToGitHub() {
+      const status = document.getElementById('admin-status');
+      status.style.color = 'var(--text-muted)';
+      status.textContent = 'Preparing...';
+      const token = document.getElementById('gh-token').value.trim();
+      const owner = document.getElementById('gh-owner').value.trim();
+      const repo = document.getElementById('gh-repo').value.trim();
+      const path = document.getElementById('gh-path').value.trim() || 'index.html';
+      const msg = document.getElementById('gh-msg').value.trim() || 'update from Infinity portal';
+      if (!token){ status.style.color='tomato'; status.textContent='Missing token.'; return; }
+
+      // grab current page HTML
+      const html = document.documentElement.outerHTML;
+      const base64 = btoa(unescape(encodeURIComponent(html)));
+
+      // we must first get the file SHA (if file exists)
+      const apiBase = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+      let sha = null;
+      try {
+        const getRes = await fetch(apiBase, {
+          headers: {
+            "Authorization": "Bearer " + token,
+            "Accept": "application/vnd.github+json"
+          }
+        });
+        if (getRes.ok){
+          const existing = await getRes.json();
+          sha = existing.sha;
+        }
+      } catch (e) {
+        // ignore, maybe file doesn't exist
+      }
+
+      // now PUT
+      try {
+        const putRes = await fetch(apiBase, {
+          method: "PUT",
+          headers: {
+            "Authorization": "Bearer " + token,
+            "Accept": "application/vnd.github+json"
+          },
+          body: JSON.stringify({
+            message: msg,
+            content: base64,
+            sha: sha || undefined
+          })
+        });
+        const data = await putRes.json();
+        if (putRes.ok){
+          status.style.color = '#22c55e';
+          status.textContent = 'Pushed ✅ Commit: ' + (data.commit && data.commit.sha ? data.commit.sha.substring(0,7) : '');
+          addLog('push_success', `Pushed ${path} to ${owner}/${repo}`);
+        } else {
+          status.style.color = 'tomato';
+          status.textContent = 'GitHub said no: ' + (data.message || putRes.status);
+          addLog('push_failed', data.message || 'unknown');
+        }
+      } catch (err) {
+        status.style.color = 'tomato';
+        status.textContent = 'Fetch failed (if you opened index.html directly, run it over http).';
+      }
+    }
+
+    document.getElementById('push-btn').onclick = pushToGitHub;
+  </script>
+
+
+</body></html>
