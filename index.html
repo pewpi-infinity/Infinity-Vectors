@@ -449,6 +449,13 @@
         window.addEventListener('resize', () => {
             const newDeviceInfo = detectDevice();
             document.getElementById('info-screen').textContent = `Screen: ${newDeviceInfo.width}x${newDeviceInfo.height}`;
+            document.getElementById('info-device').textContent = `Device Type: ${newDeviceInfo.type}`;
+            // Update global deviceInfo so form submission uses latest info
+            deviceInfo.type = newDeviceInfo.type;
+            deviceInfo.width = newDeviceInfo.width;
+            deviceInfo.height = newDeviceInfo.height;
+            deviceInfo.platform = newDeviceInfo.platform;
+            deviceInfo.userAgent = newDeviceInfo.userAgent;
         });
     </script>
 </body>
