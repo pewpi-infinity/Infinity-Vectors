@@ -366,7 +366,7 @@
             
             let deviceType = 'Computer';
             
-            if (/mobile|android|iphone|ipad|ipod|blackberry|iemobile|opera mini|webos|windows phone|kindle/i.test(userAgent)) {
+            if (/mobile|android|iphone|ipad|ipod|blackberry|iemobile|opera mini|webos|windows phone|kindle/.test(userAgent)) {
                 deviceType = 'Phone';
             } else if (width <= 768) {
                 deviceType = 'Tablet/Phone';
