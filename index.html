@@ -405,11 +405,14 @@
             // Hide boot screen
             bootScreen.classList.add('hidden');
             
-            // Show startup screen after boot
-            setTimeout(() => {
+            // Show startup screen after boot, after transition ends
+            bootScreen.addEventListener('transitionend', function handler(e) {
+                // Only respond to opacity or transform transition (if multiple transitions)
+                // Remove listener after firing
+                bootScreen.removeEventListener('transitionend', handler);
                 bootScreen.style.display = 'none';
                 startupScreen.classList.add('active');
-            }, 500);
+            });
         }, 3500);
 
         // Startup screen to app transition
