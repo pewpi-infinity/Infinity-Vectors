@@ -274,6 +274,57 @@
             margin-bottom: 0.25rem;
         }
 
+        /* Toast Notification Styles */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #00d4ff, #7b2ff7);
+            color: #fff;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(123, 47, 247, 0.6);
+            z-index: 10000;
+            animation: slideIn 0.3s ease-out, slideOut 0.3s ease-in 2.7s;
+            display: none;
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+
+        .toast-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .toast-message {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .boot-logo {
@@ -299,22 +350,29 @@
             .app-title {
                 font-size: 1.5rem;
             }
+
+            .toast {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                max-width: calc(100% - 20px);
+            }
         }
     </style>
 </head>
 <body>
     <!-- Boot Screen -->
-    <div id="boot-screen">
+    <div id="boot-screen" role="status" aria-live="polite" aria-label="System boot screen">
         <div class="boot-logo">∞ VECTORS</div>
         <div class="boot-progress">
             <div class="boot-progress-bar"></div>
         </div>
-        <div class="boot-status">Initializing system...</div>
+        <div class="boot-status" aria-live="polite">Initializing system...</div>
         <div class="device-type" id="device-type"></div>
     </div>
 
     <!-- Startup Screen -->
-    <div id="startup-screen">
+    <div id="startup-screen" role="region" aria-label="Welcome screen">
         <div class="startup-content">
             <h1 class="startup-title">Welcome to Infinity Vectors</h1>
             <p class="startup-subtitle">Your infinite possibilities start here</p>
@@ -338,7 +396,7 @@
 
                 <div class="form-group">
                     <label class="form-label" for="email">Email</label>
-                    <input type="email" id="email" class="form-input" placeholder="Enter your email" required pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$">
+                    <input type="email" id="email" class="form-input" placeholder="Enter your email" required pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}">
                 </div>
 
                 <div class="form-group">
@@ -358,7 +416,27 @@
         </div>
     </div>
 
+    <!-- Toast Notification -->
+    <div id="toast" class="toast" role="alert" aria-live="assertive">
+        <div class="toast-title" id="toast-title"></div>
+        <div class="toast-message" id="toast-message"></div>
+    </div>
+
     <script>
+        // Configuration constants
+        const TABLET_BREAKPOINT = 768;
+        const MOBILE_DEVICE_PATTERNS = /mobile|android|iphone|ipad|ipod|blackberry|iemobile|opera mini|webos|windows phone|kindle/;
+        const TABLET_PATTERNS = /ipad|tablet/;
+        const PHONE_PATTERNS = /mobile|android|iphone|ipod|blackberry|iemobile|opera mini|webos|windows phone|kindle/;
+        
+        // Boot sequence timing constants (in milliseconds)
+        const BOOT_TIMING = {
+            FIRST_STATUS_UPDATE: 1000,
+            SECOND_STATUS_UPDATE: 2000,
+            BOOT_COMPLETE: 3500,
+            TRANSITION_DELAY: 500
+        };
+
         // Device detection
         function detectDevice() {
             const width = window.innerWidth;
@@ -366,10 +444,19 @@
             
             let deviceType = 'Computer';
             
-            if (/mobile|android|iphone|ipad|ipod|blackberry|iemobile|opera mini|webos|windows phone|kindle/.test(userAgent)) {
+            // Check screen width first for better accuracy
+            if (width <= TABLET_BREAKPOINT) {
+                // Further distinguish between Phone and Tablet using user agent
+                if (PHONE_PATTERNS.test(userAgent)) {
+                    deviceType = 'Phone';
+                } else if (TABLET_PATTERNS.test(userAgent)) {
+                    deviceType = 'Tablet';
+                } else {
+                    deviceType = 'Tablet/Phone';
+                }
+            } else if (MOBILE_DEVICE_PATTERNS.test(userAgent)) {
+                // Desktop-sized window but mobile user agent (unlikely but possible)
                 deviceType = 'Phone';
-            } else if (width <= 768) {
-                deviceType = 'Tablet/Phone';
             }
             
             return {
@@ -395,11 +482,11 @@
         // Boot animation sequence
         setTimeout(() => {
             bootStatus.textContent = 'Loading system components...';
-        }, 1000);
+        }, BOOT_TIMING.FIRST_STATUS_UPDATE);
 
         setTimeout(() => {
             bootStatus.textContent = 'Preparing startup...';
-        }, 2000);
+        }, BOOT_TIMING.SECOND_STATUS_UPDATE);
 
         setTimeout(() => {
             // Hide boot screen
@@ -413,10 +500,26 @@
                 bootScreen.style.display = 'none';
                 startupScreen.classList.add('active');
             });
-        }, 3500);
+        }, BOOT_TIMING.BOOT_COMPLETE);
+
+        // Toast notification helper function
+        function showToast(title, message) {
+            const toast = document.getElementById('toast');
+            const toastTitle = document.getElementById('toast-title');
+            const toastMessage = document.getElementById('toast-message');
+            
+            toastTitle.textContent = title;
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+            
+            // Auto-hide after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
 
         // Startup screen to app transition
-        document.getElementById('start-button').addEventListener('click', () => {
+        const startToApp = () => {
             startupScreen.classList.add('hidden');
             
             setTimeout(() => {
@@ -427,7 +530,18 @@
                 document.getElementById('info-device').textContent = `Device Type: ${deviceInfo.type}`;
                 document.getElementById('info-screen').textContent = `Screen: ${deviceInfo.width}x${deviceInfo.height}`;
                 document.getElementById('info-platform').textContent = `Platform: ${deviceInfo.platform}`;
-            }, 500);
+            }, BOOT_TIMING.TRANSITION_DELAY);
+        };
+
+        // Startup screen button click handler
+        document.getElementById('start-button').addEventListener('click', startToApp);
+
+        // Keyboard navigation support for startup screen
+        document.getElementById('start-button').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                startToApp();
+            }
         });
 
         // Form submission handler
@@ -441,8 +555,8 @@
                 device: deviceInfo
             };
             
-            // Configuration saved successfully
-            alert('Configuration saved successfully!\n\nUsername: ' + formData.username + '\nSystem: ' + formData.systemName);
+            // Show toast notification instead of alert
+            showToast('Configuration Saved!', `Username: ${formData.username}, System: ${formData.systemName}`);
         });
 
         // Handle window resize
